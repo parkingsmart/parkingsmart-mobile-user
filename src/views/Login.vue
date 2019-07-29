@@ -3,31 +3,25 @@
     <IconBox class="icon-box" />
     <div class="main-pane">
       <van-field v-model="form.phone" placeholder="手机号" />
-      <van-field v-model="form.code" placeholder="验证码">
-        <CodeBtn slot="button" />
-      </van-field>
       <van-field v-model="form.password" placeholder="密码" />
 
-      <van-button class="register">注册</van-button>
-      <p class="tips">已有帐号? <a @click="$router.push({name: 'Login'})">点此登录</a></p>
+      <van-button class="login">登录</van-button>
+      <p class="tips">没有帐号? <a @click="$router.push({name: 'Register'})">点此注册</a></p>
     </div>
   </div>
 </template>
 
 <script>
 import IconBox from "../components/IconBox";
-import CodeBtn from "../components/CodeBtn";
 
 export default {
   components: {
-    IconBox,
-    CodeBtn
+    IconBox
   },
   data() {
     return {
       form: {
         phone: "",
-        code: "",
         password: ""
       }
     };
@@ -60,7 +54,7 @@ export default {
   }
 }
 
-.register {
+.login {
   width: 60vw;
   color: white;
   margin-top: 10vh;
