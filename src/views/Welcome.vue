@@ -1,12 +1,6 @@
 <template>
   <div class="container">
-    <div class="icon-box">
-      <div>
-        <img class="icon" src="../assets/icon.png" />
-        <p class="title">Parking Smart</p>
-        <p class="desc">轻松停车每一天</p>
-      </div>
-    </div>
+    <IconBox class="icon-box"/>
     <div class="footer-box">
       <van-button class="btn login" type="default">登录</van-button>
       <p class="tips">还没有帐号?</p>
@@ -16,7 +10,12 @@
 </template>
 
 <script>
+import IconBox from '../components/IconBox';
+
 export default {
+  components: {
+    IconBox
+  }
 };
 </script>
 
@@ -24,26 +23,6 @@ export default {
 .container {
   .icon-box {
     height: 70vh;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .icon {
-      width: 22vw;
-    }
-
-    .title {
-      font-size: 1rem;
-      color: #6d6e70;
-      margin-bottom: 0.4rem;
-    }
-
-    .desc {
-      margin: 0;
-      color: #9f9fa3;
-      font-size: 0.4rem;
-    }
   }
 
   .footer-box {
@@ -61,7 +40,11 @@ export default {
     }
 
     .register {
-      background: linear-gradient(to right, rgb(194, 194, 194), rgb(166, 166, 166));
+      background: linear-gradient(
+        to right,
+        rgb(194, 194, 194),
+        rgb(166, 166, 166)
+      );
     }
 
     .tips {
