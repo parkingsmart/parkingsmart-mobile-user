@@ -3,7 +3,7 @@
     <IconBox class="icon-box" />
     <div class="main-pane">
       <van-field v-model="form.phone" placeholder="手机号" />
-      <van-field v-model="form.password" placeholder="密码" />
+      <van-field v-model="form.password" placeholder="密码" type="password"/>
 
       <van-button class="login">登录</van-button>
       <p class="tips">没有帐号? <a @click="$router.push({name: 'Register'})">点此注册</a></p>

@@ -6,7 +6,7 @@
       <van-field v-model="form.code" placeholder="验证码">
         <CodeBtn slot="button" />
       </van-field>
-      <van-field v-model="form.password" placeholder="密码" />
+      <van-field v-model="form.password" placeholder="密码" type="password"/>
 
       <van-button class="register">注册</van-button>
       <p class="tips">已有帐号? <a @click="$router.push({name: 'Login'})">点此登录</a></p>
