@@ -24,7 +24,23 @@ const register = ({ phone, password }) => {
   });
 };
 
+const login = ({ phone, password }) => {
+  return axios.post(`${baseUrl}/login`, { username: phone, password }, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    transformRequest: [function (data) {
+      let newData = '';
+      for (let k in data) {
+        newData += encodeURIComponent(k) + '=' + encodeURIComponent(data[k]) + '&';
+      }
+      return newData;
+    }]
+  });
+};
+
 export default {
+  login,
   register,
   getAllOrders,
   putAnOrder

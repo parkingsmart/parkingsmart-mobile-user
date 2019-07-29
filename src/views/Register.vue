@@ -77,6 +77,7 @@ export default {
       if (vaild) {
         const res = await RequestHandler.invoke(UserApi.register(this.form)).msg("注册成功").exec();
         this.$store.commit("setUserInfo", res);
+        this.$router.push({name: "Order"});
       }
     }
   }
