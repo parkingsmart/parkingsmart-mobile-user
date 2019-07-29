@@ -25,6 +25,11 @@ export default new Router({
           name: 'user-order',
           component: UserOrder,
         },
+        {
+          path: '/order',
+          name: 'Order',
+          component: () => import('./views/Order')
+        }
       ]
     },
     {
@@ -42,10 +47,5 @@ export default new Router({
       name: 'Login',
       component: () => import('./views/Login')
     },
-    {
-      path: '/order',
-      name: 'Order',
-      component: () => import('./views/Order')
-    }
   ]
 });

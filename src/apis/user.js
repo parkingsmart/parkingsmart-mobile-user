@@ -6,7 +6,7 @@ const getAllOrders = (id) => {
   return axios.get(`${baseUrl}/${id}`);
 };
 const putAnOrder = (id, data) => {
-  return axios.put(`${baseUrl}/${id}`, data);
+  return axios.put(`${baseUrl}/${id}?oderID=${data}`);
 };
 
 const register = ({ phone, password }) => {

@@ -11,6 +11,7 @@
     </div>
     <div class="footer">
       <van-tabbar route v-model="title">
+          <van-tabbar-item replace to="/order" icon="description" name="立即下单">立即下单</van-tabbar-item>
         <van-tabbar-item replace to="/user-order" icon="description" name="我的订单">我的订单</van-tabbar-item>
       </van-tabbar>
     </div>
@@ -22,7 +23,7 @@ export default {
   name: "common",
   data() {
     return {
-      title: "我的订单",
+      title: "立即下单",
       isShowIcon: false
     };
   },
