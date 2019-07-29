@@ -11,7 +11,12 @@ export default new Router({
   routes: [
     {
       path: '/',
+      name: 'Welcome',
+      component: () => import('./views/Welcome')
+    },
+    {
       name: 'common',
+      path: '/user-order',
       redirect: '/user-order',
       component: Common,
       children: [
@@ -26,6 +31,21 @@ export default new Router({
       path: '/order-detail',
       name: 'order-detail',
       component: OrderDetail,
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: () => import('./views/Register')
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: () => import('./views/Login')
+    },
+    {
+      path: '/order',
+      name: 'Order',
+      component: () => import('./views/Order')
     }
   ]
 });

@@ -11,7 +11,7 @@
         <van-cell title="订单结束时间" size="large" :value="OrderDetail.title" />
       </van-cell-group>
     </div>
-    <van-button class="footer-btn" :disabled="!btnStatus" type="info" disa>{{btnText}}</van-button>
+    <van-button class="btn register" :disabled="!btnStatus" type="info" disa>{{btnText}}</van-button>
   </div>
 </template>
 
@@ -57,4 +57,18 @@ export default {
   position: fixed;
   bottom: 0;
 }
+.btn {
+      width: 60vw;
+      color: white;
+      border-radius: 10vw;
+      position: fixed;
+  bottom: 0;
+    }
+    .register {
+      background: linear-gradient(
+        to right,
+        rgb(194, 194, 194),
+        rgb(166, 166, 166)
+      );
+    }
 </style>
