@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import UserApi from "../apis/user";
 import IconBox from "../components/IconBox";
 import CodeBtn from "../components/CodeBtn";
 
@@ -64,7 +65,7 @@ export default {
         this[item].err = this.form[item].trim() === "" ? this[item].text : "";
       }
     },
-    register() {
+    async register() {
       let vaild = true;
       for(const key in this.form) {
         this.check(key);
@@ -73,7 +74,8 @@ export default {
         }
       }
       if (vaild) {
-        this.$notify("register success");
+        const res = await UserApi.register(this.form);
+        this.$store.commit("setUserInfo", res);
       }
     }
   }
