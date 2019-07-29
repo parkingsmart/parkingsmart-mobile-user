@@ -26,6 +26,7 @@
 import UserApi from "../apis/user";
 import IconBox from "../components/IconBox";
 import CodeBtn from "../components/CodeBtn";
+import RequestHandler from "../utils/requestHandler";
 
 export default {
   components: {
@@ -74,7 +75,7 @@ export default {
         }
       }
       if (vaild) {
-        const res = await UserApi.register(this.form);
+        const res = await RequestHandler.invoke(UserApi.register(this.form)).msg("注册成功").exec();
         this.$store.commit("setUserInfo", res);
       }
     }
