@@ -10,18 +10,13 @@
     <div class="footer-box">
       <van-button class="btn login" type="default">登录</van-button>
       <p class="tips">还没有帐号?</p>
-      <van-button class="btn resign">注册</van-button>
+      <van-button class="btn register">注册</van-button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      value: ""
-    };
-  }
 };
 </script>
 
@@ -65,7 +60,7 @@ export default {
       background: linear-gradient(to right, #0079c1, rgb(18, 150, 219));
     }
 
-    .resign {
+    .register {
       background: linear-gradient(to right, rgb(194, 194, 194), rgb(166, 166, 166));
     }
 
