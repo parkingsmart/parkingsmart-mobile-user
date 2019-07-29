@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Order from './views/Order.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -9,8 +8,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Order',
-      component: Order
+      name: 'Welcome',
+      component: () => import('./views/Welcome')
     },
+    {
+      path: '/order',
+      name: 'Order',
+      component: () => import('./views/Order')
+    }
   ]
 });
