@@ -2,7 +2,7 @@
   <div class="container">
     <IconBox class="icon-box"/>
     <div class="footer-box">
-      <van-button class="btn login" type="default">登录</van-button>
+      <van-button class="btn login" @click="$router.push({name: 'Login'})">登录</van-button>
       <p class="tips">还没有帐号?</p>
       <van-button class="btn register" @click="$router.push({name: 'Register'})">注册</van-button>
     </div>
