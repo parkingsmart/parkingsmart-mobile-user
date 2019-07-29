@@ -11,6 +11,8 @@
 
 <script>
 import OrderApi from "../apis/order.js";
+import RequestHandler from "../utils/requestHandler";
+
 export default {
   data() {
     return {
@@ -20,7 +22,7 @@ export default {
     };
   },
   methods: {
-    creatOrder() {
+    async creatOrder() {
       if ( this.carNum.trim() === "" || this.address.trim() === "" ) {
         this.$notify("请把信息填写完整");
         return;
@@ -28,15 +30,15 @@ export default {
       let date = Date.parse(new Date());
 
       let order = {
-        userId: 1,
+        userId: this.$store.state.userInfo.id,
         carNumber: this.carNum,
         appointAddress: this.address,
         appointTime: date,
         createAt: date,
         status: 0
       };
-      OrderApi.addOrder(order);
-      this.$toast("下单成功");
+      await RequestHandler.invoke(OrderApi.addOrder(order)).msg("下单成功").exec();
+      this.$router.push("/user-order");
     }
   }
 };
