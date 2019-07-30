@@ -29,7 +29,12 @@ export default new Router({
           path: '/order',
           name: 'Order',
           component: () => import('./views/Order')
-        }
+        },
+        {
+          path: '/user-info',
+          name: 'UserInfo',
+          component: () => import('./views/UserInfo')
+        },
       ]
     },
     {
@@ -46,6 +51,11 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: () => import('./views/Login')
+    },
+    {
+      path: '/user-info',
+      name: 'UserInfo',
+      component: () => import('./views/UserInfo')
     },
   ]
 });

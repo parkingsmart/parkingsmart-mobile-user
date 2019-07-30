@@ -1,7 +1,21 @@
 <template>
   <div class="order">
     <van-cell-group>
-      <van-field label="车牌号" placeholder="请输入车牌号" v-model="carNum" left-icon="logistics"/>
+      <van-field
+        label="车牌号"
+        placeholder="请输入车牌号"
+        v-model="carNum"
+        left-icon="logistics"
+        right-icon="arrow-down"
+        @click-right-icon="showHistory()"
+      />
+      <van-picker
+        show-toolbar
+        v-show="isShowHistory"
+        :columns="carNums"
+        @confirm="confirmCarNum"
+        @cancel="cancelCarNum"
+      />
       <van-field label="预约地点" placeholder="请输入停车地点" v-model="address" left-icon="location-o" />
       <van-field
         @click="show=true"
@@ -28,6 +42,7 @@
 </template>
 
 <script>
+import userApi from "../apis/user.js";
 import OrderApi from "../apis/order.js";
 import RequestHandler from "../utils/requestHandler";
 
@@ -39,8 +54,16 @@ export default {
       appointTime: "",
       currentTime: "",
       show: false,
-      minHour: new Date().getHours()
+      isShowHistory: false,
+      minHour: new Date().getHours(),
+      carNums: []
     };
+  },
+  async created(){
+    this.carNums = await RequestHandler
+      .invoke(userApi.getByCarNums(this.$store.state.userInfo.id,"carNums"))
+      .loading()
+      .exec();
   },
   methods: {
     async creatOrder() {
@@ -85,6 +108,17 @@ export default {
       let timestr = `${Y}-${M}-${D} ${this.currentTime}:00:000`;
       let timestamp = new Date(timestr).getTime();
       return timestamp;
+    },
+
+    confirmCarNum(value) {
+      if(value.length !== 0 ){
+        this.carNum = value;
+      }
+      this.isShowHistory = false;
+    },
+    cancelCarNum() { this.isShowHistory = false;},
+    showHistory() {
+      this.isShowHistory = !this.isShowHistory;
     }
   }
 };

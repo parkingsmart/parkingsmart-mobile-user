@@ -37,7 +37,6 @@ export default {
   name: "UserOrder",
   data() {
     return {
-      btnText: [],
       OrderDetail: "",
       btnStatus: true,
       userOrderList: [],
@@ -49,10 +48,6 @@ export default {
       .invoke(userApi.getAllOrders(this.$store.state.userInfo.id))
       .loading()
       .exec();
-
-    if (this.userOrderList[0].status === 3) {
-      this.btnText = "现在取车";
-    }
   },
   filters: {
     formatTime: function(value) {

@@ -5,6 +5,12 @@ const baseUrl = '/api/users';
 const getAllOrders = (id) => {
   return axios.get(`${baseUrl}/${id}`);
 };
+const getByCarNums = (id,msg) => {
+  console.log(msg);
+  return axios.get(`${baseUrl}/${id}?msg=${msg}`, {
+  });
+};
+
 const putAnOrder = (id, data) => {
   return axios.put(`${baseUrl}/${id}?oderID=${data}`);
 };
@@ -43,5 +49,6 @@ export default {
   login,
   register,
   getAllOrders,
-  putAnOrder
+  putAnOrder,
+  getByCarNums
 };
