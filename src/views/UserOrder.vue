@@ -1,17 +1,30 @@
 <template>
   <div>
     <div v-for="order in userOrderList" :key="order.id">
-      <van-panel title="订单" :desc="order.carNumber" class="van-panel">
-        <div slot="footer">
-          <van-button
-            size="small"
-            type="info"
-            @click="ChangeOrderStatus(order)"
-            :disabled="order.status!==2"
-            class="btn register"
-          >{{ getStatus(order) }}</van-button>
-        </div>
-      </van-panel>
+      <van-cell
+        title-width="50"
+        :title="order.appointAddress |formatAddress"
+        :label="order.appointTime |formatTime"
+        class="van-cell"
+      >
+        <template slot="icon">
+          <span class="car-number">{{ order.carNumber }}</span>
+        </template>
+      <van-button
+        size="small"
+        type="info"
+        @click="ChangeOrderStatus(order)"
+        :disabled="order.status!==2"
+        class="orderBtn"
+      >{{ getStatus(order) }}</van-button>
+      <van-button
+        size="small"
+        type="default"
+        @click="showDetail(order)"
+        class="orderDetail"
+      >订单详情</van-button>
+      </van-cell>
+
     </div>
   </div>
 </template>
@@ -19,6 +32,7 @@
 <script>
 import userApi from "../apis/user.js";
 import requestHandler from "../utils/requestHandler.js";
+import moment from "moment";
 export default {
   name: "UserOrder",
   data() {
@@ -38,6 +52,16 @@ export default {
 
     if (this.userOrderList[0].status === 3) {
       this.btnText = "现在取车";
+    }
+  },
+  filters: {
+    formatTime: function(value) {
+      if (!value) return "";
+      return "预约时间: " + moment(value).format("HH:mm");
+    },
+    formatAddress: function(value) {
+      if (!value) return "";
+      return "停车地点: " + value;
     }
   },
   methods: {
@@ -89,7 +113,24 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
-.van-panel {
-  margin-bottom: 20px;
+.car-number {
+  font-weight: 500;
+  display: inline-block;
+  padding-right: 20px;
+  min-width: 70px;
+  color: #4595e6;
+}
+.van-cell {
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+.orderBtn{
+  margin-left: 20px;
+  width: 80px;
+  margin-bottom: 10px;
+}
+.orderDetail{
+  margin-left: 20px;
+  width: 80px;
 }
 </style>
