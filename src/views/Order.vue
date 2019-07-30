@@ -1,8 +1,8 @@
 <template>
   <div class="order">
     <van-cell-group>
-      <van-field label="车牌号" placeholder="请输入车牌号" v-model="carNum" left-icon="logistics"/>
-      <van-field label="预约地点" placeholder="请输入停车地点" v-model="address" left-icon="location-o"/>
+      <van-field label="车牌号" placeholder="请输入车牌号" v-model="carNum" left-icon="logistics" />
+      <van-field label="预约地点" placeholder="请输入停车地点" v-model="address" left-icon="location-o" />
       <van-field
         @click="show=true"
         label="预约时间"
@@ -21,7 +21,7 @@
         :max-hour="23"
         :item-height="20"
       />
-      <van-button type="info" @click="creatOrder" size="large">下单</van-button>
+      <van-button type="info" class="order-btn" @click="creatOrder" size="large">下单</van-button>
       <van-toast id="van-toast" />
     </van-cell-group>
   </div>
@@ -93,5 +93,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.order-btn {
+  border-radius: 10vw;
+  background: linear-gradient(to right, #0079c1, rgb(18, 150, 219));
 }
 </style>
