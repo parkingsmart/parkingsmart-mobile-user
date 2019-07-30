@@ -12,7 +12,8 @@
     <div class="footer">
       <van-tabbar route>
         <van-tabbar-item replace to="/order" icon="description" name="立即下单">立即下单</van-tabbar-item>
-        <van-tabbar-item replace to="/user-order" icon="description" name="我的订单">我的订单</van-tabbar-item>
+        <van-tabbar-item replace to="/user-order" icon="description" name="订单">订单</van-tabbar-item>
+        <van-tabbar-item replace to="/user-info" icon="friends-o" name="我的">我的</van-tabbar-item>
       </van-tabbar>
     </div>
   </div>

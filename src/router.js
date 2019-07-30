@@ -47,5 +47,10 @@ export default new Router({
       name: 'Login',
       component: () => import('./views/Login')
     },
+    {
+      path: '/user-info',
+      name: 'UserInfo',
+      component: () => import('./views/UserInfo')
+    },
   ]
 });
