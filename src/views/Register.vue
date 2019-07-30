@@ -9,9 +9,9 @@
         placeholder="手机号"
         error-message-align="left"
       />
-      <van-field @blur="check('code')" :error-message="code.err" v-model="form.code" placeholder="验证码">
+      <!-- <van-field @blur="check('code')" :error-message="code.err" v-model="form.code" placeholder="验证码">
         <CodeBtn slot="button" />
-      </van-field>
+      </van-field> -->
       <van-field @blur="check('password')" :error-message="password.err" v-model="form.password" placeholder="密码" type="password" />
       <van-field @blur="check('comfirmPwd')" :error-message="comfirmPwd.err" v-model="form.comfirmPwd" placeholder="再次确认密码" type="password" />
       <van-button class="register" @click="register">注册</van-button>
@@ -26,19 +26,19 @@
 <script>
 import UserApi from "../apis/user";
 import IconBox from "../components/IconBox";
-import CodeBtn from "../components/CodeBtn";
+//import CodeBtn from "../components/CodeBtn";
 import RequestHandler from "../utils/requestHandler";
 
 export default {
   components: {
     IconBox,
-    CodeBtn
+    //CodeBtn
   },
   data() {
     return {
       form: {
         phone: "",
-        code: "",
+        //code: "",
         password: "",
         comfirmPwd:""
       },
@@ -50,10 +50,10 @@ export default {
           return value.trim() === "" ? "请输入手机号" : !reg.test(value) ? "请输入正确的手机号" : "";
         }
       },
-      code: {
-        err: "",
-        text: "请输入验证码"
-      },
+      // code: {
+      //   err: "",
+      //   text: "请输入验证码"
+      // },
       password: {
         err: "",
         text: "请输入密码"
