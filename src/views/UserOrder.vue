@@ -9,7 +9,7 @@
             @click="ChangeOrderStatus(order)"
             :disabled="!btnStatus"
             class="btn register"
-          >{{btnText}}</van-button>
+          >{{order.status}}</van-button>
         </div>
       </van-panel>
     </div>
@@ -23,7 +23,7 @@ export default {
   name: "UserOrder",
   data() {
     return {
-      btnText: "待接单",
+      btnText: [],
       OrderDetail: "",
       btnStatus: true,
       userOrderList: []
