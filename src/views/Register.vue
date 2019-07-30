@@ -13,6 +13,7 @@
         <CodeBtn slot="button" />
       </van-field>
       <van-field @blur="check('password')" :error-message="password.err" v-model="form.password" placeholder="密码" type="password" />
+      <van-field @blur="check('comfirmPwd')" :error-message="comfirmPwd.err" v-model="form.comfirmPwd" placeholder="再次确认密码" type="password" />
       <van-button class="register" @click="register">注册</van-button>
       <p class="tips">
         已有帐号?
@@ -38,7 +39,8 @@ export default {
       form: {
         phone: "",
         code: "",
-        password: ""
+        password: "",
+        comfirmPwd:""
       },
       phone: {
         err: "",
@@ -55,6 +57,10 @@ export default {
       password: {
         err: "",
         text: "请输入密码"
+      },
+      comfirmPwd: {
+        err: "",
+        text: "请再次确认密码"
       }
     };
   },
@@ -75,6 +81,11 @@ export default {
         }
       }
       if (vaild) {
+        if(this.form.password !== this.form.comfirmPwd){
+          this.$toast("密码确认失败，请重新输入");
+          this.form.comfirmPwd = "";
+          return;
+        }
         const res = await RequestHandler.invoke(UserApi.register(this.form)).msg("注册成功").exec();
         this.$store.commit("setUserInfo", res);
         this.$router.push({name: "Order"});
