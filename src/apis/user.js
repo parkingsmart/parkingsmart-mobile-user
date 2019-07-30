@@ -11,7 +11,7 @@ const getByCarNums = (id, msg) => {
 };
 
 const putAnOrder = (id, data) => {
-  return axios.put(`${baseUrl}/${id}?oderID=${data}`);
+  return axios.put(`${baseUrl}/${id}?orderID=${data}`);
 };
 
 const register = ({ phone, password }) => {
