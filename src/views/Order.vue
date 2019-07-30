@@ -2,7 +2,7 @@
   <div class="order">
     <van-cell-group>
       <van-field label="车牌号" placeholder="请输入车牌号" v-model="carNum" left-icon="logistics"/>
-      <van-field label="预约地点" placeholder="请输入停车地点" v-model="address" left-icon="location-o"/>
+      <van-field label="预约地点" placeholder="请输入停车地点" v-model="address" left-icon="location-o" />
       <van-field
         @click="show=true"
         label="预约时间"
@@ -51,11 +51,11 @@ export default {
         this.address.trim() === "" ||
         this.currentTime === ""
       ) {
-        this.$notify("请把信息填写完整");
+        this.$toast("请把信息填写完整");
         return;
       }
       if (this.appointTime < date) {
-        this.$notify("预定时间在当前时间之前，请重新输入");
+        this.$toast("预定时间在当前时间之前，请重新输入");
         return;
       }
 
@@ -67,11 +67,14 @@ export default {
         createAt: date,
         status: 0
       };
-
-      await RequestHandler.invoke(OrderApi.addOrder(order))
-        .msg("下单成功")
-        .exec();
-      this.$router.push("/user-order");
+      try {
+        await RequestHandler.invoke(OrderApi.addOrder(order))
+          .msg("下单成功")
+          .exec();
+        this.$router.push("/user-order");
+      } catch (e) {
+        e;
+      }
     },
 
     dateConverter() {
