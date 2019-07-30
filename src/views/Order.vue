@@ -1,14 +1,15 @@
 <template>
   <div class="order">
     <van-cell-group>
-      <van-field label="车牌号" placeholder="请输入车牌号" v-model="carNum" />
-      <van-field label="预约地点" placeholder="请输入停车地点" v-model="address" />
+      <van-field label="车牌号" placeholder="请输入车牌号" v-model="carNum" left-icon="logistics"/>
+      <van-field label="预约地点" placeholder="请输入停车地点" v-model="address" left-icon="location-o"/>
       <van-field
         @click="show=true"
         label="预约时间"
         placeholder="请选择停车时间"
         v-model="currentTime"
         :readonly="true"
+        left-icon="underway-o"
       />
       <van-datetime-picker
         @confirm="show=false"
@@ -18,6 +19,7 @@
         type="time"
         :min-hour="minHour"
         :max-hour="23"
+        :item-height="20"
       />
       <van-button type="info" @click="creatOrder" size="large">下单</van-button>
       <van-toast id="van-toast" />
@@ -87,7 +89,7 @@ export default {
 
 <style lang='scss' scoped>
 .order {
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
