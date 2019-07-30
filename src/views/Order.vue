@@ -21,7 +21,7 @@
         :max-hour="23"
         :item-height="20"
       />
-      <van-button type="info" @click="creatOrder" size="large">下单</van-button>
+      <van-button type="info" class="order-btn" @click="creatOrder" size="large">下单</van-button>
       <van-toast id="van-toast" />
     </van-cell-group>
   </div>
@@ -96,5 +96,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.order-btn {
+  border-radius: 10vw;
+  background: linear-gradient(to right, #0079c1, rgb(18, 150, 219));
 }
 </style>
