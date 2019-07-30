@@ -12,7 +12,9 @@
 </template>
 
 <script>
+import UserApi from "../apis/user";
 import IconBox from "../components/IconBox";
+import RequestHandler from "../utils/requestHandler";
 
 export default {
   components: {
@@ -46,7 +48,7 @@ export default {
         this[item].err = this.form[item].trim() === "" ? this[item].text : "";
       }
     },
-    login() {
+    async login() {
       let vaild = true;
       for(const key in this.form) {
         this.check(key);
@@ -55,7 +57,9 @@ export default {
         }
       }
       if (vaild) {
-        this.$notify("login success");
+        const res = await RequestHandler.invoke(UserApi.login(this.form)).msg("登录成功").exec();
+        this.$store.commit("setUserInfo", res);
+        this.$router.push({name: "Order"});
       }
     }
   }

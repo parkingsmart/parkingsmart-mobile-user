@@ -12,6 +12,7 @@
       />
       <van-datetime-picker
         @confirm="show=false"
+        @cancel="show=false"
         v-show="show"
         v-model="currentTime"
         type="time"
@@ -26,6 +27,8 @@
 
 <script>
 import OrderApi from "../apis/order.js";
+import RequestHandler from "../utils/requestHandler";
+
 export default {
   data() {
     return {
@@ -34,27 +37,39 @@ export default {
       appointTime: "",
       currentTime: "",
       show: false,
-      minHour: new Date().getHours() - 1
+      minHour: new Date().getHours()
     };
   },
   methods: {
-    creatOrder() {
-      if (this.carNum.trim() === "" || this.address.trim() === "") {
+    async creatOrder() {
+      this.appointTime = this.dateConverter();
+      let date = Date.parse(new Date());
+      if (
+        this.carNum.trim() === "" ||
+        this.address.trim() === "" ||
+        this.currentTime === ""
+      ) {
         this.$notify("请把信息填写完整");
         return;
       }
-      let date = Date.parse(new Date());
+      if (this.appointTime < date) {
+        this.$notify("预定时间在当前时间之前，请重新输入");
+        return;
+      }
 
       let order = {
-        userId: 1,
+        userId: this.$store.state.userInfo.id,
         carNumber: this.carNum,
         appointAddress: this.address,
-        appointTime: this.dateConverter(),
+        appointTime: this.appointTime,
         createAt: date,
         status: 0
       };
-      OrderApi.addOrder(order);
-      this.$toast("下单成功");
+
+      await RequestHandler.invoke(OrderApi.addOrder(order))
+        .msg("下单成功")
+        .exec();
+      this.$router.push("/user-order");
     },
 
     dateConverter() {
@@ -62,7 +77,7 @@ export default {
       let Y = date.getFullYear();
       let M = date.getMonth() + 1;
       let D = date.getDate();
-      let timestr = `${Y}-0${M}-${D} ${this.currentTime}:00:000`;
+      let timestr = `${Y}-${M}-${D} ${this.currentTime}:00:000`;
       let timestamp = new Date(timestr).getTime();
       return timestamp;
     }
