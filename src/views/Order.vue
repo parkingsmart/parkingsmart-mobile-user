@@ -64,7 +64,6 @@ export default {
       .invoke(userApi.getByCarNums(this.$store.state.userInfo.id,"carNums"))
       .loading()
       .exec();
-    console.log(this.carNums);
   },
   methods: {
     async creatOrder() {
