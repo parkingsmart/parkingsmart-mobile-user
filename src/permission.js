@@ -5,8 +5,8 @@ const whiteList = ['/login', '/register', '/'];
 
 router.beforeEach((to, from, next) => {
   if (getToken()) {
-    if (to.path === '/login') {
-      next({ path: '/' });
+    if (whiteList.indexOf(to.path) !== -1) {
+      next({ path: '/order' });
     } else {
       next();
     }
