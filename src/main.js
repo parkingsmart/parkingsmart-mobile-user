@@ -5,6 +5,7 @@ import store from './store';
 import Vant from 'vant';
 import 'vant/lib/index.css';
 import axios from 'axios';
+import './permission';
 
 Vue.use(Vant);
 Vue.use(axios);
