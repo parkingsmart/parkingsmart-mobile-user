@@ -6,6 +6,11 @@ const addOrder = (order) => {
   return axios.post(baseUrl, order);
 };
 
+const payAnOrder = (id, endTime) => {
+  return axios.patch(`${baseUrl}/${id}?endTime=${endTime}`);
+};
+
 export default {
-  addOrder
+  addOrder,
+  payAnOrder
 };
