@@ -1,15 +1,15 @@
 <template>
   <div>
     <div v-for="order in userOrderList" :key="order.id">
-      <van-panel title="订单" :desc="order.carNumber" :status="order.status+''" class="van-panel" >
+      <van-panel title="订单" :desc="order.carNumber" class="van-panel">
         <div slot="footer">
           <van-button
             size="small"
             type="info"
             @click="ChangeOrderStatus(order)"
-            :disabled="!btnStatus"
+            :disabled="order.status!==2"
             class="btn register"
-          >{{order.status}}</van-button>
+          >{{ getStatus(order) }}</van-button>
         </div>
       </van-panel>
     </div>
@@ -26,7 +26,8 @@ export default {
       btnText: [],
       OrderDetail: "",
       btnStatus: true,
-      userOrderList: []
+      userOrderList: [],
+      isdisable: false
     };
   },
   async created() {
@@ -34,6 +35,7 @@ export default {
       .invoke(userApi.getAllOrders(this.$store.state.userInfo.id))
       .loading()
       .exec();
+
     if (this.userOrderList[0].status === 3) {
       this.btnText = "现在取车";
     }
@@ -45,11 +47,43 @@ export default {
       this.$router.push("/order-detail");
     },
     async ChangeOrderStatus(order) {
-      this.OrderDetail = order;
-      await requestHandler
-        .invoke(userApi.putAnOrder(this.$store.state.userInfo.id, order.id))
-        .loading()
-        .exec();
+      if (order.status === 2) {
+        this.OrderDetail = order;
+        await requestHandler
+          .invoke(userApi.putAnOrder(this.$store.state.userInfo.id, order.id))
+          .loading()
+          .exec();
+        this.userOrderList = await requestHandler
+          .invoke(userApi.getAllOrders(this.$store.state.userInfo.id))
+          .loading()
+          .exec();
+      }
+    },
+    getStatus(order) {
+      let result;
+      switch (order.status) {
+      case 0:
+        result = "待接单";
+        this.isdisable = false;
+        break;
+      case 1:
+        result = "接单中";
+        this.isdisable = false;
+        break;
+      case 2:
+        result = "现在取车";
+        this.isdisable = false;
+        break;
+      case 3:
+        result = "取车中";
+        this.isdisable = true;
+        break;
+      default:
+        result = "订单已完成";
+        this.isdisable = false;
+        break;
+      }
+      return result;
     }
   }
 };
