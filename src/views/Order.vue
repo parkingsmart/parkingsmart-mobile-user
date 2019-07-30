@@ -111,7 +111,9 @@ export default {
     },
 
     confirmCarNum(value) {
-      this.carNum = value;
+      if(value.length !== 0 ){
+        this.carNum = value;
+      }
       this.isShowHistory = false;
     },
     cancelCarNum() { this.isShowHistory = false;},
