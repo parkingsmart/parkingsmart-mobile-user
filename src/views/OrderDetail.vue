@@ -29,10 +29,10 @@
                     clickable
                     @click="choosePromotion(parkingPromotion)"
                   >
-                  <van-radio slot="right-icon" :name="parkingPromotion.title" />
+                    <van-radio slot="right-icon" :name="parkingPromotion.title" />
                   </van-cell>
-                  <van-cell title="不使用优惠"  clickable
-                    @click="choosePromotion(null)"><van-radio slot="right-icon" name="不使用优惠"/>
+                  <van-cell title="不使用优惠" clickable @click="choosePromotion(null)">
+                    <van-radio slot="right-icon" name="不使用优惠" />
                   </van-cell>
                 </van-cell-group>
               </van-radio-group>
@@ -109,7 +109,7 @@ export default {
       promotions: [],
       chosePromotion: {},
       discountMoney: {},
-      notUsePromotion: { title : "不使用优惠" }
+      notUsePromotion: { title: "不使用优惠" }
     };
   },
   methods: {
@@ -123,36 +123,33 @@ export default {
       this.$router.go(-1);
     },
     async choosePromotion(parkingPromotion) {
-      if(parkingPromotion === null){
+      if (parkingPromotion === null) {
         this.chosePromotion = this.notUsePromotion;
         this.dropdownName = "不使用优惠";
         this.discountMoney = "";
-      }else{
+      } else {
         this.chosePromotion = parkingPromotion;
         this.dropdownName = parkingPromotion.title;
-        this.discountMoney = await parkingPromotionApi.getDiscount(parkingPromotion.id, this.OrderDetail.amount);
+        this.discountMoney = await parkingPromotionApi.getDiscount(
+          parkingPromotion.id,
+          this.OrderDetail.amount
+        );
         console.log(this.discountMoney);
       }
     },
     async initData() {
       this.promotions = await parkingPromotionApi.getAllPromotions();
     },
-    async payAnOrder() {
-      await requestHandler
-        .invoke(
-          userApi.updateOrderStatus(
-            this.$store.state.userInfo.id,
-            this.orderDetail.id
-          )
-        )
-        .msg("支付成功", "支付失败")
-        .loading()
-        .exec();
-      this.isdisable = true;
-      this.orderDetail.status = 5;
-    },
+
     async comfirePwd() {
-      if (this.value === "123456") {
+      let user = await userApi.getUserInfo(this.$store.getters.id);
+      if (user.payPassword === null) {
+        this.$toast("您还未设置支付密码，请前往个人中心进行设置");
+        this.value = "";
+        return;
+      }
+
+      if (this.value === user.payPassword) {
         await requestHandler
           .invoke(
             userApi.updateOrderStatus(
@@ -160,7 +157,7 @@ export default {
               this.orderDetail.id
             )
           )
-          .msg("支付成功", "支付失败")
+          .msg(null, "支付失败")
           .loading()
           .exec();
         this.isdisable = true;
@@ -171,6 +168,7 @@ export default {
       }
       this.value = "";
     },
+
     cancelPwd() {
       this.value = "";
     },
@@ -186,10 +184,9 @@ export default {
       } else return this.waitMsg;
     },
     getShouldPay(order, discountMoney) {
-      if(discountMoney === ""){
+      if (discountMoney === "") {
         return order.amount;
-      }
-      else return discountMoney.discountAmount;
+      } else return discountMoney.discountAmount;
     },
     getStatus(status) {
       return this.statusText[status];

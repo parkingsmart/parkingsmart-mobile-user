@@ -12,7 +12,7 @@
           :show-exchange-bar="false"
           :coupons="coupons"
           :chosen-coupon="chosenCoupon"
-          :show-close-button = false
+          :show-close-button="false"
           @change="onChange"
         />
       </van-popup>
@@ -57,7 +57,7 @@
               :error-message="payPassword.err"
               v-model="form.payPassword"
               placeholder="请输入6位数支付密码"
-              type="payPassword"
+              type="password"
             />
             <van-field
               label="确认密码"
@@ -65,7 +65,7 @@
               :error-message="comfirmPayPwd.err"
               v-model="form.comfirmPayPwd"
               placeholder="请确认密码"
-              type="comfirmPayPwd"
+              type="password"
             />
             <div class="save">
               <van-button class="passwd" @click="addPayPassword">保存</van-button>
@@ -160,10 +160,20 @@ export default {
         this[item].err = this.form[item].trim() === "" ? this[item].text : "";
       }
     },
+
     async addPayPassword() {
-      await UserApi.addPayPassword(this.$store.getters.id, {
-        payPassword: this.form.payPassword
-      });
+      if (this.form.payPassword !== this.form.comfirmPayPwd) {
+        this.$toast("密码确认失败，请重新输入");
+        this.form.comfirmPayPwd = "";
+        return;
+      }
+      await RequestHandler.invoke(
+        UserApi.addPayPassword(this.$store.getters.id, this.form.payPassword)
+      )
+        .msg("添加成功", "添加失败")
+        .exec();
+      this.form.payPassword = "";
+      this.form.comfirmPayPwd = "";
     },
 
     async updatePassword() {
