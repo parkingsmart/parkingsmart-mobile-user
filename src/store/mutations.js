@@ -7,6 +7,9 @@ export default {
     state.userInfo = userInfo;
     setToken(userInfo.id);
   },
+  setUserPromotionInfo(state, promotion) {
+    state.promotion = promotion;
+  },
   setWebSocket(state,webSocket){
     state.webSocket = webSocket;
   },
