@@ -3,6 +3,19 @@
     <van-cell-group>
       <van-cell title="我的账号" v-model="username" />
       <van-cell title="我的积分" v-model="integral" label="积分满20，购物享8.8折" />
+      <van-coupon-cell title="优惠活动" @click="showList = true" />
+      <van-popup v-model="showList" position="bottom">
+        <van-coupon-list
+          :enabled-title="promotionTitle"
+          :disabled-title="disableTitle"
+          :close-button-text="bottomTitle"
+          :show-exchange-bar="false"
+          :coupons="coupons"
+          :chosen-coupon="chosenCoupon"
+          :show-close-button = false
+          @change="onChange"
+        />
+      </van-popup>
       <van-collapse v-model="activeNames">
         <van-collapse-item title="修改密码">
           <van-cell-group>
@@ -67,9 +80,26 @@
 <script>
 import UserApi from "../apis/user";
 import RequestHandler from "../utils/requestHandler";
+const coupon1 = {
+  available: 1,
+  condition: "无使用门槛\n最多优惠12元",
+  reason: "",
+  value: 150,
+  name: "优惠名称",
+  startAt: 1489104000,
+  endAt: 1514592000,
+  valueDesc: "1.5",
+  unitDesc: "元"
+};
 export default {
   data() {
     return {
+      promotionTitle: "可兑换优惠",
+      bottomTitle: "不兑换优惠",
+      disableTitle: "不可兑换优惠",
+      chosenCoupon: -1,
+      coupons: [coupon1],
+      showList: false,
       activeNames: ["1"],
       form: {
         password: "",
@@ -112,7 +142,17 @@ export default {
         : this.$store.state.userInfo.integral;
     }
   },
+
   methods: {
+    onChange(index) {
+      this.$dialog
+        .confirm({ title: "您好", message: "确认要兑换此优惠吗?" })
+        .then(() => {
+          this.showList = false;
+          this.chosenCoupon = index;
+        })
+        .catch(() => {});
+    },
     check(item) {
       if (typeof this[item].valid === "function") {
         this[item].err = this[item].valid(this.form[item]);
