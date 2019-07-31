@@ -11,7 +11,7 @@ const getByCarNums = (id, msg) => {
 };
 
 const putAnOrder = (id, data) => {
-  return axios.put(`${baseUrl}/${id}?oderID=${data}`);
+  return axios.put(`${baseUrl}/${id}?orderID=${data}`);
 };
 
 const register = ({ phone, password }) => {
@@ -63,6 +63,10 @@ const login = ({ phone, password }) => {
   });
 };
 
+const updateOrderStatus = (id,orderId) =>{
+  return axios.patch(`${baseUrl}/${id}?orderId=${orderId}`);
+};
+
 export default {
   login,
   register,
@@ -70,5 +74,6 @@ export default {
   putAnOrder,
   getByCarNums,
   updatePassword,
-  getUserInfo
+  getUserInfo,
+  updateOrderStatus
 };

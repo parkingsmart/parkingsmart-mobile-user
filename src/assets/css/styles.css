@@ -1,22 +1,18 @@
+
 .header{
-    background-color: #1b82d2;
+    background: linear-gradient(to right, #0079c1, rgb(18, 150, 219));
     height: 50px;
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+    top: 0;
   }
   .head{
     color: white;
     line-height: 50px;
     font-size: 18px;
   }
-  .head-font{
-      color: #1b82d2
-  }
-  .loginStyle{
-    display: flex;
-    justify-content: center;
-    height: 100vh;
-    background-color: rgb(204, 204, 204)
-  }
-  .loginCenter{
-    display: flex;
-    align-items: center;
+  .content{
+    margin-bottom: 50px;
+    margin-top: 50px;
   }
