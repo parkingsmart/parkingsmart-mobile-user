@@ -51,7 +51,7 @@ export default {
     },
     async payAnOrder() {
       await requestHandler
-        .invoke(orderApi.payAnOrder(this.orderDetail.id, new Date().getTime()))
+        .invoke(orderApi.updateOrderStatus(this.orderDetail.id, 5))
         .msg("支付成功", "支付失败")
         .loading()
         .exec();
