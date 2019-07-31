@@ -13,9 +13,9 @@
           size="small"
           type="info"
           @click="ChangeOrderStatus(order)"
-          :disabled="order.status!==2"
+          :disabled="order.status!==1 && order.status!==3"
           class="orderBtn"
-        >{{ getStatus(order) }}</van-button>
+        >{{ statusList[order.status] }}</van-button>
         <van-button size="small" type="default" @click="showDetail(order)" class="orderDetail">订单详情</van-button>
       </van-cell>
     </div>
@@ -31,19 +31,16 @@ import { setTimeout } from 'timers';
 export default {
   name: "UserOrder",
   data() {
+    const statusList = ['待接单', '已交车', '已交车', '现在取车', '待还车', '待支付', '已完成'];
     return {
-      btnText: ["待接单","接单中","现在取车","取车中","订单待支付","订单已支付"],
+      statusList,
       OrderDetail: "",
       btnStatus: true,
-      userOrderList: [],
-      isdisable: false,
+      userOrderList: []
     };
   },
   async created() {
     await this.initUserOrder();
-    if (this.userOrderList[0].status === 3) {
-      this.btnText = "现在取车";
-    }
     let webSocket = new WebSocket(
       `${Config.wsUrl()}/api/users/${this.$store.getters.id}/orders`
     );
@@ -75,10 +72,10 @@ export default {
       this.$router.push("/order-detail");
     },
     async ChangeOrderStatus(order) {
-      if (order.status === 2) {
+      if (order.status === 3 || order.status === 1) {
         this.OrderDetail = order;
         await requestHandler
-          .invoke(userApi.putAnOrder(this.$store.state.userInfo.id, order.id))
+          .invoke(userApi.putAnOrder(this.$store.state.userInfo.id, order.id, order.status + 1))
           .loading()
           .exec();
         this.userOrderList = await requestHandler
@@ -86,13 +83,6 @@ export default {
           .loading()
           .exec();
       }
-    },
-    getStatus(order) {
-      this.isdisable = false;
-      if(order.status  === 2){
-        this.isdisable = true;
-      }
-      return this.btnText[order.status];
     },
     async initUserOrder(){
       this.userOrderList = await requestHandler

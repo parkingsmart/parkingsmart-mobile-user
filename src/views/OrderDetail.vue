@@ -10,7 +10,7 @@
         <van-cell title="订单开始时间" size="large" :value="OrderDetail.createAt| formatTime" />
         <van-cell title="订单状态" size="large">
           <template slot="default">
-            <van-tag round type="success" class="cell-icon">{{ getStatus(orderDetail.status) }}</van-tag>
+            <van-tag round type="success" class="cell-icon">{{ statusList[orderDetail.status] }}</van-tag>
           </template>
         </van-cell>
         <van-cell title="预约时间" size="large" :value="OrderDetail.appointTime| formatTime" />
@@ -49,7 +49,7 @@
         :price="getShouldPay(OrderDetail, discountMoney)*100"
         button-text="支付订单"
         @submit="show=true"
-        v-if="orderDetail.status === 4"
+        v-if="orderDetail.status === 5"
       >
         <span slot="tip">
           如果您有任何疑问，请联系客服电话(
@@ -85,17 +85,11 @@ import parkingPromotionApi from "../apis/parking_promotion.js";
 export default {
   name: "OrderDetail",
   data() {
+    const statusList = ['待接单', '已接单', '已交车', '已停车', '待还车', '待支付', '已完成'];
     return {
       waitMsg: "等待订单完成",
       btnText: "支付订单",
-      statusText: [
-        "待接单",
-        "停车中",
-        "停放完毕",
-        "取车中",
-        "订单完成，等待支付中",
-        "已支付"
-      ],
+      statusList,
       title: "订单详情",
       orderDetail: {},
       pricePerHour: 10,
@@ -149,7 +143,7 @@ export default {
         .loading()
         .exec();
       this.isdisable = true;
-      this.orderDetail.status = 5;
+      this.orderDetail.status = 6;
     },
     async comfirePwd() {
       if (this.value === "123456") {
@@ -164,7 +158,7 @@ export default {
           .loading()
           .exec();
         this.isdisable = true;
-        this.orderDetail.status = 5;
+        this.orderDetail.status = 6;
         this.$toast("支付成功");
       } else {
         this.$toast("密码错误");
@@ -190,14 +184,11 @@ export default {
         return order.amount;
       }
       else return discountMoney.discountAmount;
-    },
-    getStatus(status) {
-      return this.statusText[status];
     }
   },
   created() {
     this.orderDetail = this.$store.state.orderDetail;
-    if (this.orderDetail.status >= 4) {
+    if (this.orderDetail.status >= 5) {
       this.initData();
     }
   },
