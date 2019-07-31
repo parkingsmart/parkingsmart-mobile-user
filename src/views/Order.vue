@@ -33,6 +33,7 @@
         type="time"
         :min-hour="minHour"
         :max-hour="23"
+        :min-minute="minute"
         :item-height="20"
       />
       <van-button type="info" class="order-btn" @click="creatOrder" size="large">下单</van-button>
@@ -52,18 +53,24 @@ export default {
       carNum: "",
       address: "",
       appointTime: "",
-      currentTime: "",
+      currentTime: new Date().getHours() + ":" + (Array(2).join(0) +  new Date().getMinutes()).slice(-2),
       show: false,
       isShowHistory: false,
       minHour: new Date().getHours(),
       carNums: []
     };
   },
-  async created(){
-    this.carNums = await RequestHandler
-      .invoke(userApi.getByCarNums(this.$store.state.userInfo.id,"carNums"))
+  async created() {
+    this.carNums = await RequestHandler.invoke(
+      userApi.getByCarNums(this.$store.state.userInfo.id, "carNums")
+    )
       .loading()
       .exec();
+  },
+  computed: {
+    minute() {
+      return this.currentTime.split(":")[0] !== new Date().getHours().toString() ? 0 : new Date().getMinutes();
+    }
   },
   methods: {
     async creatOrder() {
@@ -77,11 +84,6 @@ export default {
         this.$toast("请把信息填写完整");
         return;
       }
-      if (this.appointTime < date) {
-        this.$toast("预定时间在当前时间之前，请重新输入");
-        return;
-      }
-
       let order = {
         userId: this.$store.state.userInfo.id,
         carNumber: this.carNum,
@@ -99,7 +101,6 @@ export default {
         e;
       }
     },
-
     dateConverter() {
       let date = new Date();
       let Y = date.getFullYear();
@@ -111,12 +112,14 @@ export default {
     },
 
     confirmCarNum(value) {
-      if(value.length !== 0 ){
+      if (value.length !== 0) {
         this.carNum = value;
       }
       this.isShowHistory = false;
     },
-    cancelCarNum() { this.isShowHistory = false;},
+    cancelCarNum() {
+      this.isShowHistory = false;
+    },
     showHistory() {
       this.isShowHistory = !this.isShowHistory;
     }
