@@ -8,7 +8,11 @@
       <van-cell-group>
         <van-cell title="订单号" size="large" :value="OrderDetail.id" />
         <van-cell title="订单开始时间" size="large" :value="OrderDetail.createAt| formatTime" />
-        <van-cell title="订单状态" size="large" :value="getStatus(orderDetail.status)" />
+        <van-cell title="订单状态" size="large">
+          <template slot="default">
+            <van-tag round type="success" class="cell-icon">{{ getStatus(orderDetail.status) }}</van-tag>
+          </template>
+        </van-cell>
         <van-cell title="预约时间" size="large" :value="OrderDetail.appointTime| formatTime" />
         <van-cell title="订单结束时间" size="large" :value="OrderDetail.endAt| formatTime" />
         <van-cell title="预约地点" size="large" :value="OrderDetail.appointAddress" />
@@ -18,20 +22,20 @@
         <van-cell title="服务时长" size="large" :value="getServeTime(OrderDetail)" />
       </van-cell-group>
     </div>
-     <div class="footer-btn">
-    <van-button
-      type="info"
-      @click="payAnOrder"
-      v-if="orderDetail.status!==5"
-      :disabled="OrderDetail.status!==4"
-    >{{btnText}}
-    </van-button>
+    <div class="footer-btn">
+      <van-button
+        type="info"
+        @click="payAnOrder"
+        v-if="orderDetail.status!==5"
+        :disabled="OrderDetail.status!==4"
+      >{{btnText}}
+      </van-button>
     </div>
   </div>
 </template>
 
 <script>
-import orderApi from "../apis/order.js";
+import userApi from "../apis/user.js";
 import requestHandler from "../utils/requestHandler.js";
 import moment from "moment";
 export default {
@@ -40,6 +44,7 @@ export default {
     return {
       waitMsg: "等待订单完成",
       btnText: "支付订单",
+      statusText: ["待接单","停车中","停放完毕","取车中","订单完成，等待支付中","已支付"],
       title: "订单详情",
       orderDetail: {},
       pricePerHour: 10,
@@ -54,7 +59,7 @@ export default {
     },
     async payAnOrder() {
       await requestHandler
-        .invoke(orderApi.updateOrderStatus(this.orderDetail.id, 5))
+        .invoke(userApi.updateOrderStatus(this.$store.state.userInfo.id, this.orderDetail.id))
         .msg("支付成功", "支付失败")
         .loading()
         .exec();
@@ -80,7 +85,7 @@ export default {
     getShouldPay(order, integral) {
       let allMoney = this.getAllMoney(order);
       if (order.endAt !== null && this.getPromotion(integral)) {
-        return allMoney > 8 ? allMoney - 8  : 0;
+        return allMoney > 8 ? allMoney - 8 : 0;
       }
       return allMoney;
     },
@@ -88,28 +93,7 @@ export default {
       return integral >= 20 ? true : false;
     },
     getStatus(status) {
-      let result;
-      switch (status) {
-      case 0:
-        result = "待接单";
-        break;
-      case 1:
-        result = "停车中";
-        break;
-      case 2:
-        result = "停放完毕";
-        break;
-      case 3:
-        result = "取车中";
-        break;
-      case 4:
-        result = "订单完成，等待支付中";
-        break;
-      case 5:
-        result = "已支付";
-        break;
-      }
-      return result;
+      return this.statusText[status];
     }
   },
   created() {
@@ -129,7 +113,7 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
-.content{
+.content {
   margin-bottom: 50px;
 }
 .header {

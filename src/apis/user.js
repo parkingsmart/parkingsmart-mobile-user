@@ -59,11 +59,16 @@ const login = ({ phone, password }) => {
   });
 };
 
+const updateOrderStatus = (id,orderId) =>{
+  return axios.patch(`${baseUrl}/${id}?orderId=${orderId}`);
+};
+
 export default {
   login,
   register,
   getAllOrders,
   putAnOrder,
   getByCarNums,
-  updatePassword
+  updatePassword,
+  updateOrderStatus
 };
