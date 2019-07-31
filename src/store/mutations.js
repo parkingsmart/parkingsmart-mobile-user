@@ -1,5 +1,4 @@
 import { setToken } from '@/utils/token';
-
 export default {
   setOrderDetail(state, data) {
     state.orderDetail = data;
@@ -7,5 +6,11 @@ export default {
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo;
     setToken(userInfo.id);
+  },
+  setWebSocket(state,webSocket){
+    state.webSocket = webSocket;
+  },
+  setWebSocketData(state,webSocketData){
+    state.webSocketData = webSocketData;
   }
 };
