@@ -3,7 +3,11 @@ import axios from './base.js';
 const baseUrl = '/api/users';
 
 const getAllOrders = (id) => {
-  return axios.get(`${baseUrl}/${id}`);
+  return axios.get(`${baseUrl}/${id}`,{
+    params:{
+      msg:"all"
+    }
+  });
 };
 const getByCarNums = (id, msg) => {
   return axios.get(`${baseUrl}/${id}?msg=${msg}`, {
@@ -67,6 +71,13 @@ const login = ({ phone, password }) => {
   });
 };
 
+const addPayPassword = (id,payPassword) =>{
+  return axios({
+    method: "put",
+    url: `${baseUrl}/${id}?payPassword=${payPassword}`,
+  });
+};
+
 const updateOrderStatus = (id,orderId) =>{
   return axios.patch(`${baseUrl}/${id}?orderId=${orderId}`);
 };
@@ -80,5 +91,6 @@ export default {
   updatePassword,
   getUserInfo,
   updateOrderStatus,
-  getUserPromotion
+  getUserPromotion,
+  addPayPassword
 };

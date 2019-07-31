@@ -1,4 +1,4 @@
-import { Notify, Toast } from 'vant';
+import { Toast } from 'vant';
 
 const _toast = Symbol('_toast');
 const [_option, _promise] = [Symbol('_option'), Symbol('_promise')];
@@ -14,7 +14,7 @@ const defaultOption = {
 
 function successHandle() {
   if (this[_option].showMsg && this[_option].successMsg) {
-    Notify({
+    Toast({
       message: this[_option].successMsg,
       duration: 1000,
       background: '#1989fa'
@@ -25,7 +25,7 @@ function successHandle() {
 function errorHandle(err) {
   if (this[_option].showMsg) {
     const message = err && err.message ? err.message : this[_option].errorMsg;
-    Notify(message);
+    Toast(message);
   }
 }
 

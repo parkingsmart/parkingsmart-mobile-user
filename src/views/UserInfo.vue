@@ -17,7 +17,7 @@
         />
       </van-popup>
       <van-collapse v-model="activeNames">
-        <van-collapse-item title="设置">
+        <van-collapse-item title="修改密码">
           <van-cell-group>
             <van-field
               label="旧密码"
@@ -45,6 +45,30 @@
             />
             <div class="save">
               <van-button class="passwd" @click="updatePassword">保存</van-button>
+            </div>
+          </van-cell-group>
+        </van-collapse-item>
+
+        <van-collapse-item title="设置支付密码">
+          <van-cell-group>
+            <van-field
+              label="支付密码"
+              @blur="check('payPassword')"
+              :error-message="payPassword.err"
+              v-model="form.payPassword"
+              placeholder="请输入6位数支付密码"
+              type="payPassword"
+            />
+            <van-field
+              label="确认密码"
+              @blur="check('comfirmPayPwd')"
+              :error-message="comfirmPayPwd.err"
+              v-model="form.comfirmPayPwd"
+              placeholder="请确认密码"
+              type="comfirmPayPwd"
+            />
+            <div class="save">
+              <van-button class="passwd" @click="addPayPassword">保存</van-button>
             </div>
           </van-cell-group>
         </van-collapse-item>
@@ -78,7 +102,9 @@ export default {
       form: {
         password: "",
         comfirmPwd: "",
-        oldPassword: ""
+        oldPassword: "",
+        payPassword: "",
+        comfirmPayPwd: ""
       },
       oldPassword: {
         err: "",
@@ -89,6 +115,14 @@ export default {
         text: "请输入新密码"
       },
       comfirmPwd: {
+        err: "",
+        text: "请再次确认密码"
+      },
+      payPassword: {
+        err: "",
+        text: "请输入6位数密码"
+      },
+      comfirmPayPwd: {
         err: "",
         text: "请再次确认密码"
       }
@@ -153,6 +187,12 @@ export default {
         this[item].err = this.form[item].trim() === "" ? this[item].text : "";
       }
     },
+    async addPayPassword() {
+      await UserApi.addPayPassword(this.$store.getters.id, {
+        payPassword: this.form.payPassword
+      });
+    },
+
     async updatePassword() {
       let vaild = true;
       for (const key in this.form) {
