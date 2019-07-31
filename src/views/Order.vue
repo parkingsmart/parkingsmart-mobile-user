@@ -89,7 +89,7 @@ export default {
       }
       let order = {
         userId: this.$store.state.userInfo.id,
-        carNumber: this.carNum,
+        carNumber: this.carNum.replace(/\s*/g,""),
         appointAddress: this.address,
         appointTime: this.appointTime,
         createAt: date,
