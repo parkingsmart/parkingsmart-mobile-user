@@ -6,9 +6,6 @@
         :label="order.appointTime |formatTime"
         class="van-cell"
       >
-      <template slot="title">
-        <span style="">{{order.appointAddress}}</span>
-      </template>
         <template slot="icon">
           <span class="car-number">{{ order.carNumber }}</span>
         </template>
