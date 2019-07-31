@@ -9,21 +9,15 @@
         <template slot="icon">
           <span class="car-number">{{ order.carNumber }}</span>
         </template>
-      <van-button
-        size="small"
-        type="info"
-        @click="ChangeOrderStatus(order)"
-        :disabled="order.status!==2"
-        class="orderBtn"
-      >{{ getStatus(order) }}</van-button>
-      <van-button
-        size="small"
-        type="default"
-        @click="showDetail(order)"
-        class="orderDetail"
-      >订单详情</van-button>
+        <van-button
+          size="small"
+          type="info"
+          @click="ChangeOrderStatus(order)"
+          :disabled="order.status!==2"
+          class="orderBtn"
+        >{{ getStatus(order) }}</van-button>
+        <van-button size="small" type="default" @click="showDetail(order)" class="orderDetail">订单详情</van-button>
       </van-cell>
-
     </div>
   </div>
 </template>
@@ -32,6 +26,8 @@
 import userApi from "../apis/user.js";
 import requestHandler from "../utils/requestHandler.js";
 import moment from "moment";
+import Config from "../config";
+import { setTimeout } from 'timers';
 export default {
   name: "UserOrder",
   data() {
@@ -44,14 +40,21 @@ export default {
     };
   },
   async created() {
-    this.userOrderList = await requestHandler
-      .invoke(userApi.getAllOrders(this.$store.state.userInfo.id))
-      .loading()
-      .exec();
-
+    await this.initUserOrder();
     if (this.userOrderList[0].status === 3) {
       this.btnText = "现在取车";
     }
+    let webSocket = new WebSocket(
+      `${Config.wsUrl()}/api/users/${this.$store.getters.id}/orders`
+    );
+    webSocket.onmessage = res => {
+      this.$store.commit("setWebSocketData", res.data);
+      this.initUserOrder();
+      setTimeout(() => {
+        this.$store.commit("setWebSocketData", null);
+      }, 3000);
+    };
+    this.$store.commit("setWebSocket", webSocket);
   },
   filters: {
     formatTime: function(value) {
@@ -111,6 +114,13 @@ export default {
         break;
       }
       return result;
+    },
+    async initUserOrder(){
+      this.userOrderList = await requestHandler
+        .invoke(userApi.getAllOrders(this.$store.state.userInfo.id))
+        .loading()
+        .exec();
+
     }
   }
 };
@@ -127,12 +137,12 @@ export default {
   margin-bottom: 10px;
   margin-top: 20px;
 }
-.orderBtn{
+.orderBtn {
   margin-left: 20px;
   width: 80px;
   margin-bottom: 10px;
 }
-.orderDetail{
+.orderDetail {
   margin-left: 20px;
   width: 80px;
 }

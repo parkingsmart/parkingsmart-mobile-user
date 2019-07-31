@@ -45,7 +45,8 @@
 import userApi from "../apis/user.js";
 import OrderApi from "../apis/order.js";
 import RequestHandler from "../utils/requestHandler";
-
+import Config from "../config";
+import { setTimeout } from 'timers';
 export default {
   data() {
     return {
@@ -54,14 +55,31 @@ export default {
       appointTime: "",
       currentTime: "",
       show: false,
+      isShowPopup: false,
       isShowHistory: false,
       minHour: new Date().getHours(),
-      carNums: []
+      carNums: [],
+      ws: null
     };
   },
-  async created(){
-    this.carNums = await RequestHandler
-      .invoke(userApi.getByCarNums(this.$store.state.userInfo.id,"carNums"))
+  async created() {
+    let webSocket = new WebSocket(
+      `${Config.wsUrl()}/api/users/${this.$store.getters.id}/orders`
+    );
+    webSocket.onmessage = res => {
+      this.$store.commit("setWebSocketData", res.data);
+      RequestHandler
+        .invoke(userApi.getAllOrders(this.$store.getters.id))
+        .loading()
+        .exec();
+      setTimeout(() => {
+        this.$store.commit("setWebSocketData", null);
+      }, 3000);
+    };
+    this.$store.commit("setWebSocket", webSocket);
+    this.carNums = await RequestHandler.invoke(
+      userApi.getByCarNums(this.$store.state.userInfo.id, "carNums")
+    )
       .loading()
       .exec();
   },
@@ -111,12 +129,14 @@ export default {
     },
 
     confirmCarNum(value) {
-      if(value.length !== 0 ){
+      if (value.length !== 0) {
         this.carNum = value;
       }
       this.isShowHistory = false;
     },
-    cancelCarNum() { this.isShowHistory = false;},
+    cancelCarNum() {
+      this.isShowHistory = false;
+    },
     showHistory() {
       this.isShowHistory = !this.isShowHistory;
     }

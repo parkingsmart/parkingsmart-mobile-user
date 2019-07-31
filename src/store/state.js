@@ -1,4 +1,6 @@
 export default {
   orderDetail: {},
-  userInfo: null
+  userInfo: null,
+  webSocket: null,
+  webSocketData: null
 };
