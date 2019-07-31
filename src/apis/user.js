@@ -29,8 +29,8 @@ const register = ({ phone, password }) => {
   });
 };
 
-const updatePassword = (id,data) => {
-  return axios.put(`${baseUrl}/${id}`,{oldPassword:data.oldPassword,newPassword:data.password},{
+const updatePassword = (id, data) => {
+  return axios.put(`${baseUrl}/${id}`, { oldPassword: data.oldPassword, newPassword: data.password }, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
@@ -42,6 +42,10 @@ const updatePassword = (id,data) => {
       return newData;
     }]
   });
+};
+
+const getUserInfo = (id) => {
+  return axios.get(`${baseUrl}/${id}`);
 };
 
 const login = ({ phone, password }) => {
@@ -65,5 +69,6 @@ export default {
   getAllOrders,
   putAnOrder,
   getByCarNums,
-  updatePassword
+  updatePassword,
+  getUserInfo
 };
