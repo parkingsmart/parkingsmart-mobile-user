@@ -19,7 +19,7 @@
         <van-cell title="总金额(元)" size="large" :value="OrderDetail.amount" />
         <van-cell>
           <van-dropdown-menu>
-            <van-dropdown-item :title="dropdownName" ref="item">
+            <van-dropdown-item :title="dropdownName" ref="item" :disabled="OrderDetail.status ===6">
               <van-radio-group v-model="chosePromotion.title">
                 <van-cell-group>
                   <van-cell
@@ -39,7 +39,7 @@
             </van-dropdown-item>
           </van-dropdown-menu>
         </van-cell>
-        <van-cell title="节约金额" size="large" :value="discountMoney.discount" />
+        <van-cell title="节约金额" size="large" :value="getDiscountAmount(discountMoney.discount)" />
         <van-cell title="共支付(元)" size="large" :value="getShouldPay(OrderDetail, discountMoney)" />
         <van-cell title="服务时长" size="large" :value="getServeTime(OrderDetail)" />
       </van-cell-group>
@@ -103,7 +103,7 @@ export default {
       promotions: [],
       chosePromotion: {},
       discountMoney: {},
-      notUsePromotion: { title: "不使用优惠" }
+      notUsePromotion: { id: -1,title: "不使用优惠" }
     };
   },
   methods: {
@@ -116,8 +116,14 @@ export default {
     back() {
       this.$router.go(-1);
     },
+    getDiscountAmount(discount){
+      if (this.orderDetail.status === 6){
+        return (this.orderDetail.amount - this.orderDetail.discountAmount).toFixed(1);
+      }
+      return discount;
+    },
     async choosePromotion(parkingPromotion) {
-      if (parkingPromotion === null) {
+      if (parkingPromotion === null && this.OrderDetail.status !== 6) {
         this.chosePromotion = this.notUsePromotion;
         this.dropdownName = "不使用优惠";
         this.discountMoney = "";
@@ -128,11 +134,17 @@ export default {
           parkingPromotion.id,
           this.OrderDetail.amount
         );
-        console.log(this.discountMoney);
       }
     },
     async initData() {
       this.promotions = await parkingPromotionApi.getAllPromotions();
+      if (this.orderDetail.status === 6) {
+        let promotionId = this.orderDetail.promotionId;
+        this.chosePromotion = this.promotions.find(
+          item => item.id === promotionId
+        );
+        this.dropdownName = this.chosePromotion.title;
+      }
     },
     async comfirePwd() {
       let user = await userApi.getUserInfo(this.$store.getters.id);
@@ -145,9 +157,10 @@ export default {
       if (this.value === user.payPassword) {
         await requestHandler
           .invoke(
-            userApi.updateOrderStatus(
+            userApi.finishOrder(
               this.$store.state.userInfo.id,
-              this.orderDetail.id
+              this.orderDetail.id,
+              this.chosePromotion.id
             )
           )
           .msg(null, "支付失败")
@@ -177,10 +190,12 @@ export default {
       } else return this.waitMsg;
     },
     getShouldPay(order, discountMoney) {
-      if (discountMoney === "") {
+      if (discountMoney === "" && this.orderDetail.status !== 6) {
         return order.amount;
       }
-      else return discountMoney.discountAmount;
+      if (this.orderDetail.status === 6) {
+        return this.orderDetail.discountAmount.toFixed(1);
+      } else return discountMoney.discountAmount;
     }
   },
   created() {

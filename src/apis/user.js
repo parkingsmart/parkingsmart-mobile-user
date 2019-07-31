@@ -87,6 +87,10 @@ const updateOrderStatus = (id, orderId) => {
   return axios.patch(`${baseUrl}/${id}?orderId=${orderId}`);
 };
 
+const finishOrder = (id, orderId, promotionId) => {
+  return axios.patch(`${baseUrl}/${id}?orderId=${orderId}&promotionId=${promotionId}`);
+};
+
 export default {
   login,
   register,
@@ -98,4 +102,5 @@ export default {
   updateOrderStatus,
   getUserPromotion,
   addPayPassword,
+  finishOrder
 };
