@@ -32,11 +32,11 @@ export default {
   name: "UserOrder",
   data() {
     return {
-      btnText: [],
+      btnText: ["待接单","接单中","现在取车","取车中","订单待支付","订单已支付"],
       OrderDetail: "",
       btnStatus: true,
       userOrderList: [],
-      isdisable: false
+      isdisable: false,
     };
   },
   async created() {
@@ -86,41 +86,17 @@ export default {
       }
     },
     getStatus(order) {
-      let result;
-      switch (order.status) {
-      case 0:
-        result = "待接单";
-        this.isdisable = false;
-        break;
-      case 1:
-        result = "接单中";
-        this.isdisable = false;
-        break;
-      case 2:
-        result = "现在取车";
-        this.isdisable = false;
-        break;
-      case 3:
-        result = "取车中";
+      this.isdisable = false;
+      if(order.status  === 2){
         this.isdisable = true;
-        break;
-      case 4:
-        result = "订单待支付";
-        this.isdisable = false;
-        break;
-      case 5:
-        result = "订单已支付";
-        this.isdisable = false;
-        break;
       }
-      return result;
+      return this.btnText[order.status];
     },
     async initUserOrder(){
       this.userOrderList = await requestHandler
         .invoke(userApi.getAllOrders(this.$store.state.userInfo.id))
         .loading()
         .exec();
-
     }
   }
 };

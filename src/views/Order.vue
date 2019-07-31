@@ -33,6 +33,7 @@
         type="time"
         :min-hour="minHour"
         :max-hour="23"
+        :min-minute="minute"
         :item-height="20"
       />
       <van-button type="info" class="order-btn" @click="creatOrder" size="large">下单</van-button>
@@ -53,7 +54,7 @@ export default {
       carNum: "",
       address: "",
       appointTime: "",
-      currentTime: "",
+      currentTime: new Date().getHours() + ":" + (Array(2).join(0) +  new Date().getMinutes()).slice(-2),
       show: false,
       isShowPopup: false,
       isShowHistory: false,
@@ -83,6 +84,11 @@ export default {
       .loading()
       .exec();
   },
+  computed: {
+    minute() {
+      return this.currentTime.split(":")[0] !== new Date().getHours().toString() ? 0 : new Date().getMinutes();
+    }
+  },
   methods: {
     async creatOrder() {
       this.appointTime = this.dateConverter();
@@ -94,15 +100,13 @@ export default {
       ) {
         this.$toast("请把信息填写完整");
         return;
-      }
-      if (this.appointTime < date) {
-        this.$toast("预定时间在当前时间之前，请重新输入");
+      } else if(!this.checkCarNum(this.carNum)) {
+        this.$toast("请输入正确的车牌号");
         return;
       }
-
       let order = {
         userId: this.$store.state.userInfo.id,
-        carNumber: this.carNum,
+        carNumber: this.carNum.replace(/\s*/g,""),
         appointAddress: this.address,
         appointTime: this.appointTime,
         createAt: date,
@@ -117,7 +121,6 @@ export default {
         e;
       }
     },
-
     dateConverter() {
       let date = new Date();
       let Y = date.getFullYear();
@@ -139,6 +142,11 @@ export default {
     },
     showHistory() {
       this.isShowHistory = !this.isShowHistory;
+    },
+    checkCarNum(carNum) {
+      carNum = carNum.replace(/\s*/g,"");
+      const re = /^[\u4e00-\u9fa5]{1}[A-Z]{1}[A-Z_0-9]{5}$/;
+      return re.test(carNum);
     }
   }
 };
