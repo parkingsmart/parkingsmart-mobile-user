@@ -83,6 +83,9 @@ export default {
       ) {
         this.$toast("请把信息填写完整");
         return;
+      } else if(!this.checkCarNum(this.carNum)) {
+        this.$toast("请输入正确的车牌号");
+        return;
       }
       let order = {
         userId: this.$store.state.userInfo.id,
@@ -122,6 +125,11 @@ export default {
     },
     showHistory() {
       this.isShowHistory = !this.isShowHistory;
+    },
+    checkCarNum(carNum) {
+      carNum = carNum.replace(/\s*/g,"");
+      const re = /^[\u4e00-\u9fa5]{1}[A-Z]{1}[A-Z_0-9]{5}$/;
+      return re.test(carNum);
     }
   }
 };
