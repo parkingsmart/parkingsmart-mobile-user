@@ -9,21 +9,15 @@
         <template slot="icon">
           <span class="car-number">{{ order.carNumber }}</span>
         </template>
-      <van-button
-        size="small"
-        type="info"
-        @click="ChangeOrderStatus(order)"
-        :disabled="order.status!==2"
-        class="orderBtn"
-      >{{ getStatus(order) }}</van-button>
-      <van-button
-        size="small"
-        type="default"
-        @click="showDetail(order)"
-        class="orderDetail"
-      >订单详情</van-button>
+        <van-button
+          size="small"
+          type="info"
+          @click="ChangeOrderStatus(order)"
+          :disabled="order.status!==2"
+          class="orderBtn"
+        >{{ getStatus(order) }}</van-button>
+        <van-button size="small" type="default" @click="showDetail(order)" class="orderDetail">订单详情</van-button>
       </van-cell>
-
     </div>
   </div>
 </template>
@@ -100,12 +94,12 @@ export default {
   margin-bottom: 10px;
   margin-top: 20px;
 }
-.orderBtn{
+.orderBtn {
   margin-left: 20px;
   width: 80px;
   margin-bottom: 10px;
 }
-.orderDetail{
+.orderDetail {
   margin-left: 20px;
   width: 80px;
 }
