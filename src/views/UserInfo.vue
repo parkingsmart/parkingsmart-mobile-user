@@ -2,7 +2,7 @@
   <div slot="footer">
     <van-cell-group>
       <van-cell title="我的账号" v-model="username" />
-      <van-cell title="我的积分" v-model="integral"/>
+      <van-cell title="我的积分" v-model="integral" />
       <van-coupon-cell title="我的优惠" @click="showList = true" />
       <van-popup v-model="showList" position="bottom">
         <van-coupon-list
@@ -140,7 +140,7 @@ export default {
             endAt: 0,
             valueDesc: "",
             unitDesc: "",
-            description: "兑换码:123456789"
+            description: ""
           };
           coupon.condition = element.title;
           coupon.name = element.shop_mall_name;
@@ -150,6 +150,7 @@ export default {
           element.type === 0
             ? (coupon.unitDesc = "元")
             : (coupon.unitDesc = "折");
+          coupon.description = `兑换码:${element.redemptionCode}`;
           coupons.push(coupon);
         });
         return coupons;

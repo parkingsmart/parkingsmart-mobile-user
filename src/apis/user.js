@@ -27,10 +27,6 @@ const getUserPromotion = (id) => {
   return axios.get(`${baseUrl}/${id}/promotions`);
 };
 
-const deleteUserPromotion = (userId,shopId) => {
-  return axios.delete(`${baseUrl}/${userId}/promotions/${shopId}`);
-};
-
 const register = ({ phone, password }) => {
   return axios.post(`${baseUrl}/registered`, { username: phone, password }, {
     headers: {
@@ -102,5 +98,4 @@ export default {
   updateOrderStatus,
   getUserPromotion,
   addPayPassword,
-  deleteUserPromotion
 };
