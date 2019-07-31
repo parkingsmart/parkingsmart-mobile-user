@@ -2,13 +2,12 @@
   <div slot="footer">
     <van-cell-group>
       <van-cell title="我的账号" v-model="username" />
-      <van-cell title="我的积分" v-model="integral" label="积分满20，购物享8.8折" />
-      <van-coupon-cell title="优惠活动" @click="showList = true" />
+      <van-cell title="我的积分" v-model="integral"/>
+      <van-coupon-cell title="我的优惠" @click="showList = true" />
       <van-popup v-model="showList" position="bottom">
         <van-coupon-list
           :enabled-title="promotionTitle"
           :disabled-title="disableTitle"
-          :close-button-text="bottomTitle"
           :show-exchange-bar="false"
           :coupons="promotion"
           :chosen-coupon="chosenCoupon"
@@ -80,22 +79,11 @@
 <script>
 import UserApi from "../apis/user";
 import RequestHandler from "../utils/requestHandler";
-// const coupon1 = {
-//   condition: "无使用门槛",
-//   name: "华发商都",
-//   value: 150,
-//   startAt: 1489104000,
-//   endAt: 1514592000,
-//   valueDesc: "1.5",
-//   unitDesc: "元",
-//   description: "温馨提示:请在有效期内尽快使用哦"
-// };
 export default {
   data() {
     return {
-      promotionTitle: "可兑换优惠",
-      bottomTitle: "不兑换优惠",
-      disableTitle: "不可兑换优惠",
+      promotionTitle: "可使用优惠",
+      disableTitle: "不可使用优惠",
       chosenCoupon: -1,
       showList: false,
       activeNames: ["1"],
@@ -144,7 +132,6 @@ export default {
         return [];
       } else {
         let coupons = [];
-        console.log(this.$store.state.promotion);
         this.$store.state.promotion.forEach(element => {
           let coupon = {
             condition: "",
@@ -153,7 +140,7 @@ export default {
             endAt: 0,
             valueDesc: "",
             unitDesc: "",
-            description: "温馨提示:请在有效期内尽快使用哦"
+            description: "兑换码:123456789"
           };
           coupon.condition = element.title;
           coupon.name = element.shop_mall_name;
@@ -172,13 +159,13 @@ export default {
 
   methods: {
     onChange(index) {
-      this.$dialog
-        .confirm({ title: "您好", message: "确认要兑换此优惠吗?" })
-        .then(() => {
-          this.showList = false;
-          this.chosenCoupon = index;
-        })
-        .catch(() => {});
+      this.showList = false;
+      this.chosenCoupon = index;
+    },
+    async deleteUserPromotion(userId, shopId) {
+      await RequestHandler.invoke(
+        UserApi.deleteUserPromotion(userId, shopId)
+      ).exec();
     },
     check(item) {
       if (typeof this[item].valid === "function") {

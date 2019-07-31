@@ -3,9 +3,9 @@ import axios from './base.js';
 const baseUrl = '/api/users';
 
 const getAllOrders = (id) => {
-  return axios.get(`${baseUrl}/${id}`,{
-    params:{
-      msg:"all"
+  return axios.get(`${baseUrl}/${id}`, {
+    params: {
+      msg: "all"
     }
   });
 };
@@ -20,6 +20,10 @@ const putAnOrder = (id, data) => {
 
 const getUserPromotion = (id) => {
   return axios.get(`${baseUrl}/${id}/promotions`);
+};
+
+const deleteUserPromotion = (userId,shopId) => {
+  return axios.delete(`${baseUrl}/${userId}/promotions/${shopId}`);
 };
 
 const register = ({ phone, password }) => {
@@ -71,14 +75,14 @@ const login = ({ phone, password }) => {
   });
 };
 
-const addPayPassword = (id,payPassword) =>{
+const addPayPassword = (id, payPassword) => {
   return axios({
     method: "put",
     url: `${baseUrl}/${id}?payPassword=${payPassword}`,
   });
 };
 
-const updateOrderStatus = (id,orderId) =>{
+const updateOrderStatus = (id, orderId) => {
   return axios.patch(`${baseUrl}/${id}?orderId=${orderId}`);
 };
 
@@ -92,5 +96,6 @@ export default {
   getUserInfo,
   updateOrderStatus,
   getUserPromotion,
-  addPayPassword
+  addPayPassword,
+  deleteUserPromotion
 };
