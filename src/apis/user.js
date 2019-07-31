@@ -14,8 +14,13 @@ const getByCarNums = (id, msg) => {
   });
 };
 
-const putAnOrder = (id, data) => {
-  return axios.put(`${baseUrl}/${id}?orderID=${data}`);
+const putAnOrder = (id, orderId, status) => {
+  return axios.put(`${baseUrl}/${id}`, null, {
+    params: {
+      orderId,
+      status
+    }
+  });
 };
 
 const getUserPromotion = (id) => {
