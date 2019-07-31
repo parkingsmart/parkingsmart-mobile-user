@@ -23,13 +23,32 @@
       </van-cell-group>
     </div>
     <div class="footer-btn">
-      <van-button
-        type="info"
-        @click="payAnOrder"
-        v-if="orderDetail.status!==5"
-        :disabled="OrderDetail.status!==4"
-      >{{btnText}}
-      </van-button>
+      <van-submit-bar
+        :price="getShouldPay(OrderDetail,integral)*100"
+        button-text="支付订单"
+        @submit="show=true"
+        v-if="orderDetail.status === 5"
+      >
+        <span slot="tip">
+          如果您有任何疑问，请联系客服电话(
+          <a href="tel://13726267001">13726267001</a>)
+        </span>
+      </van-submit-bar>
+      <div>
+        <van-dialog
+          v-model="show"
+          title="请输入支付密码"
+          :overlay="false"
+          @confirm="comfirePwd"
+          @cancel="cancelPwd"
+          close-on-click-overlay
+          show-cancel-button
+        >
+          <van-password-input :value="value" @focus="showKeyboard = true" />
+        </van-dialog>
+      </div>
+      <!-- 数字键盘 -->
+      <van-number-keyboard :show="show" @input="onInput" @delete="onDelete" @blur="show= false" />
     </div>
   </div>
 </template>
@@ -44,27 +63,57 @@ export default {
     return {
       waitMsg: "等待订单完成",
       btnText: "支付订单",
-      statusText: ["待接单","停车中","停放完毕","取车中","订单完成，等待支付中","已支付"],
+      statusText: [
+        "待接单",
+        "停车中",
+        "停放完毕",
+        "取车中",
+        "订单完成，等待支付中",
+        "已支付"
+      ],
       title: "订单详情",
       orderDetail: {},
       pricePerHour: 10,
       isPromotion: false,
       integral: 20,
-      isdisable: false
+      isdisable: false,
+      value: "",
+      show: false,
+      showKeyboard: false
     };
   },
   methods: {
+    onInput(key) {
+      this.value = (this.value + key).slice(0, 6);
+    },
+    onDelete() {
+      this.value = this.value.slice(0, this.value.length - 1);
+    },
     back() {
       this.$router.go(-1);
     },
-    async payAnOrder() {
-      await requestHandler
-        .invoke(userApi.updateOrderStatus(this.$store.state.userInfo.id, this.orderDetail.id))
-        .msg("支付成功", "支付失败")
-        .loading()
-        .exec();
-      this.isdisable = true;
-      this.orderDetail.status = 5;
+    async comfirePwd() {
+      if (this.value === "123456") {
+        await requestHandler
+          .invoke(
+            userApi.updateOrderStatus(
+              this.$store.state.userInfo.id,
+              this.orderDetail.id
+            )
+          )
+          .msg("支付成功", "支付失败")
+          .loading()
+          .exec();
+        this.isdisable = true;
+        this.orderDetail.status = 5;
+        this.$toast("支付成功");
+      } else {
+        this.$toast("密码错误");
+      }
+      this.value = "";
+    },
+    cancelPwd() {
+      this.value = "";
     },
     getTimeDiff(order) {
       let startTime = moment(order.createAt);
