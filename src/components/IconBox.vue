@@ -21,14 +21,15 @@
 }
 
 .title {
-  font-size: 1rem;
-  color: #6d6e70;
-  margin-bottom: 0.4rem;
+  font-size: 28px;
+  color: #1296db;
+  margin-bottom: 3px;
+  margin-top: 10px;
 }
 
 .desc {
   margin: 0;
   color: #9f9fa3;
-  font-size: 0.4rem;
+  font-size: 12px;
 }
 </style>
