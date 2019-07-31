@@ -49,6 +49,8 @@
       </div>
       <!-- 数字键盘 -->
       <van-number-keyboard :show="show" @input="onInput" @delete="onDelete" @blur="show= false" />
+
+      <van-overlay :show="show" @click="show = false" />
     </div>
   </div>
 </template>
