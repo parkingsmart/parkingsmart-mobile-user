@@ -46,12 +46,10 @@ export default {
     );
     webSocket.onmessage = res => {
       this.initUserOrder();
-      if(res.data !== "updateData"){
-        this.$store.commit("setWebSocketData", res.data);
-        setTimeout(() => {
-          this.$store.commit("setWebSocketData", null);
-        }, 3000);
-      }
+      this.$store.commit("setWebSocketData", res.data);
+      setTimeout(() => {
+        this.$store.commit("setWebSocketData", null);
+      }, 3000);
     };
     this.$store.commit("setWebSocket", webSocket);
   },
