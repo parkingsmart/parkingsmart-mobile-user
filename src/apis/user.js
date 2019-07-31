@@ -23,6 +23,10 @@ const putAnOrder = (id, orderId, status) => {
   });
 };
 
+const getUserPromotion = (id) => {
+  return axios.get(`${baseUrl}/${id}/promotions`);
+};
+
 const register = ({ phone, password }) => {
   return axios.post(`${baseUrl}/registered`, { username: phone, password }, {
     headers: {
@@ -92,5 +96,6 @@ export default {
   updatePassword,
   getUserInfo,
   updateOrderStatus,
+  getUserPromotion,
   addPayPassword
 };

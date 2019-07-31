@@ -60,6 +60,8 @@ export default {
         const res = await RequestHandler.invoke(UserApi.login(this.form)).msg("登录成功").exec();
         this.$store.commit("setUserInfo", res);
         this.$router.push({name: "Order"});
+        const promotion = await RequestHandler.invoke(UserApi.getUserPromotion(res.id)).exec();
+        this.$store.commit("setUserPromotionInfo", promotion);
       }
     }
   }

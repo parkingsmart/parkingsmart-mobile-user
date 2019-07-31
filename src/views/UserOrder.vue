@@ -45,8 +45,8 @@ export default {
       `${Config.wsUrl()}/api/users/${this.$store.getters.id}/orders`
     );
     webSocket.onmessage = res => {
-      this.$store.commit("setWebSocketData", res.data);
       this.initUserOrder();
+      this.$store.commit("setWebSocketData", res.data);
       setTimeout(() => {
         this.$store.commit("setWebSocketData", null);
       }, 3000);
