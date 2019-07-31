@@ -36,6 +36,9 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
+.content {
+  padding-bottom: 50px;
+}
 .header {
   background: linear-gradient(to right, #0079c1, rgb(18, 150, 219));
   text-align: center;

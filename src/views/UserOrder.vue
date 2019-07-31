@@ -2,7 +2,7 @@
   <div>
     <div v-for="order in userOrderList" :key="order.id">
       <van-cell
-        :title="order.appointAddress |formatAddress"
+        :title="order.appointAddress"
         :label="order.appointTime |formatTime"
         class="van-cell"
       >
@@ -101,8 +101,12 @@ export default {
         result = "取车中";
         this.isdisable = true;
         break;
-      default:
-        result = "订单已完成";
+      case 4:
+        result = "订单待支付";
+        this.isdisable = false;
+        break;
+      case 5:
+        result = "订单已支付";
         this.isdisable = false;
         break;
       }

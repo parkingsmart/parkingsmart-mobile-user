@@ -18,12 +18,15 @@
         <van-cell title="服务时长" size="large" :value="getServeTime(OrderDetail)" />
       </van-cell-group>
     </div>
+     <div class="footer-btn">
     <van-button
       type="info"
       @click="payAnOrder"
       v-if="orderDetail.status!==5"
       :disabled="OrderDetail.status!==4"
-    >{{btnText}}</van-button>
+    >{{btnText}}
+    </van-button>
+    </div>
   </div>
 </template>
 
@@ -51,7 +54,7 @@ export default {
     },
     async payAnOrder() {
       await requestHandler
-        .invoke(orderApi.payAnOrder(this.orderDetail.id, new Date().getTime()))
+        .invoke(orderApi.updateOrderStatus(this.orderDetail.id, 5))
         .msg("支付成功", "支付失败")
         .loading()
         .exec();
@@ -77,7 +80,7 @@ export default {
     getShouldPay(order, integral) {
       let allMoney = this.getAllMoney(order);
       if (order.endAt !== null && this.getPromotion(integral)) {
-        return allMoney - 8;
+        return allMoney > 8 ? allMoney - 8  : 0;
       }
       return allMoney;
     },
@@ -146,6 +149,7 @@ export default {
 .footer-btn {
   width: 100%;
   position: fixed;
+
   bottom: 0;
 }
 .btn {
