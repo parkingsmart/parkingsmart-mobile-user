@@ -10,9 +10,9 @@
           :disabled-title="disableTitle"
           :close-button-text="bottomTitle"
           :show-exchange-bar="false"
-          :coupons="coupons"
+          :coupons="promotion"
           :chosen-coupon="chosenCoupon"
-          :show-close-button = false
+          :show-close-button="false"
           @change="onChange"
         />
       </van-popup>
@@ -56,17 +56,16 @@
 <script>
 import UserApi from "../apis/user";
 import RequestHandler from "../utils/requestHandler";
-const coupon1 = {
-  available: 1,
-  condition: "无使用门槛\n最多优惠12元",
-  reason: "",
-  value: 150,
-  name: "优惠名称",
-  startAt: 1489104000,
-  endAt: 1514592000,
-  valueDesc: "1.5",
-  unitDesc: "元"
-};
+// const coupon1 = {
+//   condition: "无使用门槛",
+//   name: "华发商都",
+//   value: 150,
+//   startAt: 1489104000,
+//   endAt: 1514592000,
+//   valueDesc: "1.5",
+//   unitDesc: "元",
+//   description: "温馨提示:请在有效期内尽快使用哦"
+// };
 export default {
   data() {
     return {
@@ -74,7 +73,6 @@ export default {
       bottomTitle: "不兑换优惠",
       disableTitle: "不可兑换优惠",
       chosenCoupon: -1,
-      coupons: [coupon1],
       showList: false,
       activeNames: ["1"],
       form: {
@@ -106,6 +104,35 @@ export default {
       return this.$store.state.userInfo === null
         ? "Welcome"
         : this.$store.state.userInfo.integral;
+    },
+    promotion() {
+      if (this.$store.state.promotion === null) {
+        return [];
+      } else {
+        let coupons = [];
+        console.log(this.$store.state.promotion);
+        this.$store.state.promotion.forEach(element => {
+          let coupon = {
+            condition: "",
+            name: "",
+            startAt: 0,
+            endAt: 0,
+            valueDesc: "",
+            unitDesc: "",
+            description: "温馨提示:请在有效期内尽快使用哦"
+          };
+          coupon.condition = element.title;
+          coupon.name = element.shop_mall_name;
+          coupon.startAt = element.startTime;
+          coupon.endAt = element.endTime;
+          coupon.valueDesc = element.amount;
+          element.type === 0
+            ? (coupon.unitDesc = "元")
+            : (coupon.unitDesc = "折");
+          coupons.push(coupon);
+        });
+        return coupons;
+      }
     }
   },
 

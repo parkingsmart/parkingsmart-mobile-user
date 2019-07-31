@@ -1,4 +1,5 @@
 export default {
   orderDetail: {},
-  userInfo: null
+  userInfo: null,
+  promotion: null
 };

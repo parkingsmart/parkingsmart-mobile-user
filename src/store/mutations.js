@@ -7,5 +7,8 @@ export default {
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo;
     setToken(userInfo.id);
+  },
+  setUserPromotionInfo(state, promotion) {
+    state.promotion = promotion;
   }
 };

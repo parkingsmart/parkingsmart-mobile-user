@@ -14,6 +14,10 @@ const putAnOrder = (id, data) => {
   return axios.put(`${baseUrl}/${id}?orderID=${data}`);
 };
 
+const getUserPromotion = (id) => {
+  return axios.get(`${baseUrl}/${id}/promotions`);
+};
+
 const register = ({ phone, password }) => {
   return axios.post(`${baseUrl}/registered`, { username: phone, password }, {
     headers: {
@@ -75,5 +79,6 @@ export default {
   getByCarNums,
   updatePassword,
   getUserInfo,
-  updateOrderStatus
+  updateOrderStatus,
+  getUserPromotion
 };
