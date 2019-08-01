@@ -5,6 +5,27 @@
       <span class="head">{{ title }}</span>
     </div>
     <div class="content">
+      <van-steps
+        v-if="orderDetail.status < 4"
+        :active="orderDetail.status"
+        active-icon="success"
+        active-color="#38f"
+      >
+        <van-step>用户下单</van-step>
+        <van-step>小哥接单</van-step>
+        <van-step>用户交车</van-step>
+        <van-step>小哥停车</van-step>
+      </van-steps>
+      <van-steps
+        v-else
+        :active="orderDetail.status % 4"
+        active-icon="success"
+        active-color="#38f"
+      >
+        <van-step>通知小哥</van-step>
+        <van-step>小哥还车</van-step>
+        <van-step>完成订单</van-step>
+      </van-steps>
       <van-cell-group>
         <van-cell title="订单号" size="large" :value="OrderDetail.id" />
         <van-cell title="订单开始时间" size="large" :value="OrderDetail.createAt| formatTime" />
