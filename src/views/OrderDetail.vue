@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="header">
-      <van-icon class="back-icon" name="arrow-left" @click="back" />
+      <span class="back">
+        <van-icon class="back-icon" name="arrow-left" @click="back" />
+      </span>
       <span class="head">{{ title }}</span>
     </div>
     <div class="content">
@@ -32,6 +34,7 @@
         <van-cell title="预约时间" size="large" :value="OrderDetail.appointTime| formatTime" />
         <van-cell title="订单结束时间" size="large" :value="OrderDetail.endAt| formatTime" />
         <van-cell title="预约地点" size="large" :value="OrderDetail.appointAddress" />
+        <van-cell title="停车场" size="large" :value="parkingLot.name" />
         <van-cell
           v-show="OrderDetail.status ===5||OrderDetail.status ===6"
           title="总金额(元)"
@@ -127,6 +130,7 @@ import orderApi from "../apis/order.js";
 import requestHandler from "../utils/requestHandler.js";
 import moment from "moment";
 import parkingPromotionApi from "../apis/parking_promotion.js";
+import parkingLotApi from "../apis/parking_lot.js";
 export default {
   name: "OrderDetail",
   data() {
@@ -156,7 +160,8 @@ export default {
       promotions: [],
       chosePromotion: { id: -1, title: "不使用优惠" },
       discountMoney: "",
-      notUsePromotion: { id: -1, title: "不使用优惠" }
+      notUsePromotion: { id: -1, title: "不使用优惠" },
+      parkingLot: {name:"未选择"}
     };
   },
   methods: {
@@ -303,7 +308,6 @@ export default {
             promotion = i;
           }
         } else {
-          console.log(discount);
           if (i.amount > discount) {
             discount = i.amount;
             promotion = i;
@@ -318,12 +322,16 @@ export default {
         name: "UserInfo",
         params: { setPayPwd: "setPayPwd" }
       });
+    },
+    async getParkingLot() {
+      this.parkingLot = await parkingLotApi.getParkingLotById(this.orderDetail.parkingLotId);
     }
   },
 
   created() {
     this.orderDetail = this.$store.state.orderDetail;
     this.integral = this.$store.state.userInfo.integral;
+    this.getParkingLot();
     if (this.orderDetail.status >= 5) {
       this.initData();
     }
@@ -342,6 +350,15 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
+.back {
+  position: absolute;
+  left: 10px;
+}
+.back-icon {
+  font-size: 28px;
+  line-height: 50px;
+  color: white;
+}
 .content {
   margin-bottom: 50px;
 }
@@ -349,16 +366,6 @@ export default {
   text-align: center;
   font-size: 15px;
   z-index: 2;
-}
-.back {
-  position: absolute;
-  left: 10px;
-}
-.back-icon {
-  float: left;
-  font-size: 15px;
-  line-height: 50px;
-  color: white;
 }
 .footer-btn {
   width: 100%;
