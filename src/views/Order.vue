@@ -47,14 +47,18 @@ import userApi from "../apis/user.js";
 import OrderApi from "../apis/order.js";
 import RequestHandler from "../utils/requestHandler";
 import Config from "../config";
-import { setTimeout } from 'timers';
+import { setTimeout } from "timers";
+import { getFirstLogin, setFirstLogin } from "../utils/token";
 export default {
   data() {
     return {
       carNum: "",
       address: "",
       appointTime: "",
-      currentTime: new Date().getHours() + ":" + (Array(2).join(0) +  new Date().getMinutes()).slice(-2),
+      currentTime:
+        new Date().getHours() +
+        ":" +
+        (Array(2).join(0) + new Date().getMinutes()).slice(-2),
       show: false,
       isShowPopup: false,
       isShowHistory: false,
@@ -67,10 +71,21 @@ export default {
     let webSocket = new WebSocket(
       `${Config.wsUrl()}/api/users/${this.$store.getters.id}/orders`
     );
+    if (!getFirstLogin()) {
+      setFirstLogin("success login");
+      this.$dialog
+        .confirm({
+          title: "您好",
+          message:
+            "欢迎来到Parking Smart,\n现在下单还能享有优惠哦,\n是否立即去查看优惠"
+        })
+        .then(() => {
+          this.$router.push({ name: "UserInfo" });
+        });
+    }
     webSocket.onmessage = res => {
       this.$store.commit("setWebSocketData", res.data);
-      RequestHandler
-        .invoke(userApi.getAllOrders(this.$store.getters.id))
+      RequestHandler.invoke(userApi.getAllOrders(this.$store.getters.id))
         .loading()
         .exec();
       setTimeout(() => {
@@ -86,7 +101,9 @@ export default {
   },
   computed: {
     minute() {
-      return this.currentTime.split(":")[0] !== new Date().getHours().toString() ? 0 : new Date().getMinutes();
+      return this.currentTime.split(":")[0] !== new Date().getHours().toString()
+        ? 0
+        : new Date().getMinutes();
     }
   },
   methods: {
@@ -100,13 +117,13 @@ export default {
       ) {
         this.$toast("请把信息填写完整");
         return;
-      } else if(!this.checkCarNum(this.carNum)) {
+      } else if (!this.checkCarNum(this.carNum)) {
         this.$toast("请输入正确的车牌号");
         return;
       }
       let order = {
         userId: this.$store.state.userInfo.id,
-        carNumber: this.carNum.replace(/\s*/g,""),
+        carNumber: this.carNum.replace(/\s*/g, ""),
         appointAddress: this.address,
         appointTime: this.appointTime,
         createAt: date,
@@ -144,7 +161,7 @@ export default {
       this.isShowHistory = !this.isShowHistory;
     },
     checkCarNum(carNum) {
-      carNum = carNum.replace(/\s*/g,"");
+      carNum = carNum.replace(/\s*/g, "");
       const re = /^[\u4e00-\u9fa5]{1}[A-Z]{1}[A-Z_0-9]{5}$/;
       return re.test(carNum);
     }
