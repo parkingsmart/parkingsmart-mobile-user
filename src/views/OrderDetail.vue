@@ -48,7 +48,7 @@
       <van-submit-bar
         :price="getShouldPay(OrderDetail, discountMoney)*100"
         button-text="支付订单"
-        @submit="show=true"
+        @submit="submitOrder"
         v-if="orderDetail.status === 5"
       >
         <span slot="tip">
@@ -73,6 +73,15 @@
       <van-number-keyboard :show="show" @input="onInput" @delete="onDelete" @blur="show= false" />
 
       <van-overlay :show="show" @click="show = false" />
+      <van-dialog
+        v-model="showDialog"
+        show-cancel-button
+        @confirm="dialogConfirm"
+        class="dialogContent"
+      >
+        <img class="icon" src="../assets/warning.png" />
+        <p class="warnMess">您还未设置支付密码，是否前往设置？</p>
+      </van-dialog>
     </div>
   </div>
 </template>
@@ -85,7 +94,15 @@ import parkingPromotionApi from "../apis/parking_promotion.js";
 export default {
   name: "OrderDetail",
   data() {
-    const statusList = ['待接单', '已接单', '已交车', '已停车', '待还车', '待支付', '已完成'];
+    const statusList = [
+      "待接单",
+      "已接单",
+      "已交车",
+      "已停车",
+      "待还车",
+      "待支付",
+      "已完成"
+    ];
     return {
       waitMsg: "等待订单完成",
       btnText: "支付订单",
@@ -98,12 +115,13 @@ export default {
       isdisable: false,
       value: "",
       show: false,
+      showDialog: false,
       showKeyboard: false,
       dropdownName: "选择优惠",
       promotions: [],
-      chosePromotion: { id: -1},
+      chosePromotion: { id: -1 },
       discountMoney: {},
-      notUsePromotion: { id: -1,title: "不使用优惠" }
+      notUsePromotion: { id: -1, title: "不使用优惠" }
     };
   },
   methods: {
@@ -116,9 +134,11 @@ export default {
     back() {
       this.$router.go(-1);
     },
-    getDiscountAmount(discount){
-      if (this.orderDetail.status === 6){
-        return (this.orderDetail.amount - this.orderDetail.discountAmount).toFixed(1);
+    getDiscountAmount(discount) {
+      if (this.orderDetail.status === 6) {
+        return (
+          this.orderDetail.amount - this.orderDetail.discountAmount
+        ).toFixed(1);
       }
       return discount;
     },
@@ -147,14 +167,17 @@ export default {
         this.dropdownName = this.chosePromotion.title;
       }
     },
-    async comfirePwd() {
+    async submitOrder() {
       let user = await userApi.getUserInfo(this.$store.getters.id);
       if (user.payPassword === null) {
-        this.$toast("您还未设置支付密码，请前往个人中心进行设置");
+        this.showDialog = true;
         this.value = "";
         return;
       }
-
+      this.show = true;
+    },
+    async comfirePwd() {
+      let user = await userApi.getUserInfo(this.$store.getters.id);
       if (this.value === user.payPassword) {
         await requestHandler
           .invoke(
@@ -196,11 +219,17 @@ export default {
       }
       if (order.status === 6 && this.chosePromotion.id !== -1) {
         return order.discountAmount.toFixed(1);
-      }else if(this.chosePromotion.id === -1){
+      } else if (this.chosePromotion.id === -1) {
         return order.amount;
       } else return discountMoney.discountAmount;
+    },
+    dialogConfirm() {
+      this.$router.push({
+        name: "UserInfo"
+      });
     }
   },
+
   created() {
     this.orderDetail = this.$store.state.orderDetail;
     if (this.orderDetail.status >= 5) {
@@ -253,5 +282,15 @@ export default {
 }
 .register {
   background: linear-gradient(to right, rgb(194, 194, 194), rgb(166, 166, 166));
+}
+.dialogContent {
+  text-align: center;
+  padding-top: 30px;
+  & .icon {
+    height: 80px;
+  }
+  & .warnMess {
+    margin-top: 10px;
+  }
 }
 </style>
