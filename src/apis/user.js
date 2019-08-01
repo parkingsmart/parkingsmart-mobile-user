@@ -27,6 +27,10 @@ const getUserPromotion = (id) => {
   return axios.get(`${baseUrl}/${id}/promotions`);
 };
 
+const addPromotion = (id, type, shopMallName, amount) => {
+  return axios.post(`${baseUrl}/${id}/promotions`, { type, shopMallName, amount });
+};
+
 const register = ({ phone, password }) => {
   return axios.post(`${baseUrl}/registered`, { username: phone, password }, {
     headers: {
@@ -98,4 +102,5 @@ export default {
   updateOrderStatus,
   getUserPromotion,
   addPayPassword,
+  addPromotion
 };
