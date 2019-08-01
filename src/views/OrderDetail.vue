@@ -240,7 +240,8 @@ export default {
     },
     dialogConfirm() {
       this.$router.push({
-        name: "UserInfo"
+        name: "UserInfo",
+        params: { setPayPwd: "setPayPwd" }
       });
     }
   },

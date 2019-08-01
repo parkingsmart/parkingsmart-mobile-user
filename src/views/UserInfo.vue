@@ -110,7 +110,7 @@ export default {
         { text: "华发商都", value: 0 },
         { text: "扬明广场", value: 1 }
       ],
-      activeNames: [],
+      activeNames: this.$route.params.setPayPwd,
       promotionAcNames: ["1"],
       form: {
         password: "",
