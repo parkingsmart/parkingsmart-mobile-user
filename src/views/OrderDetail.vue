@@ -45,10 +45,11 @@
           <template slot="title">
           <span class="custom-title">使用优惠</span>
           <div>
-            <span class="custom-title">(需要花费20积分)</span>
+            <span class="custom-title" v-if="OrderDetail.status !==6">(需要花费20积分)</span>
           </div>
           </template>
-          <van-dropdown-menu>
+          <span v-if="OrderDetail.status ===6" disabled input-align="right">{{dropdownName}}</span>
+          <van-dropdown-menu  v-else>
             <van-dropdown-item :title="dropdownName" ref="item" :disabled="OrderDetail.status ===6">
               <van-radio-group v-model="chosePromotion.title">
                 <van-cell-group>
