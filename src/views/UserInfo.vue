@@ -2,8 +2,27 @@
   <div slot="footer">
     <van-cell-group>
       <van-cell title="我的账号" v-model="username" />
-      <van-cell title="我的积分" v-model="integral" />
-      <van-coupon-cell title="我的优惠" @click="showList = true" />
+      <van-collapse v-model="promotionAcNames">
+        <van-collapse-item title="我的积分" :label="integral" value="兑换优惠" clickable>
+          <van-radio-group v-model="radio">
+            <van-cell-group>
+              <van-dropdown-menu>
+                <van-dropdown-item v-model="value" :options="shopNameOption" />
+              </van-dropdown-menu>
+              <van-cell title="10元抵扣卷无门槛使用" clickable @click="radio = '1'">
+                <van-radio slot="right-icon" name="1" />
+              </van-cell>
+              <van-cell title="8.8折扣卷无门槛使用" clickable @click="radio = '2'">
+                <van-radio slot="right-icon" name="2" />
+              </van-cell>
+              <div class="save">
+                <van-button class="passwd" @click="addPromotion()">兑换</van-button>
+              </div>
+            </van-cell-group>
+          </van-radio-group>
+        </van-collapse-item>
+      </van-collapse>
+      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showList = true" arrow-direction="down" />
       <van-popup v-model="showList" position="bottom">
         <van-coupon-list
           :enabled-title="promotionTitle"
@@ -15,7 +34,7 @@
           @change="onChange"
         />
       </van-popup>
-      <van-collapse v-model="activeNames">
+      <van-collapse v-model="passActiveNames">
         <van-collapse-item title="修改密码">
           <van-cell-group>
             <van-field
@@ -82,11 +101,18 @@ import RequestHandler from "../utils/requestHandler";
 export default {
   data() {
     return {
-      promotionTitle: "可使用优惠",
-      disableTitle: "不可使用优惠",
+      promotionTitle: "可使用优惠卷",
+      disableTitle: "不可使用优惠卷",
       chosenCoupon: -1,
       showList: false,
-      activeNames: ["1"],
+      radio: "1",
+      value: 0,
+      shopNameOption: [
+        { text: "华发商都", value: 0 },
+        { text: "扬明广场", value: 1 }
+      ],
+      passActiveNames: ["1"],
+      promotionAcNames: ["1"],
       form: {
         password: "",
         comfirmPwd: "",
@@ -143,7 +169,7 @@ export default {
             description: ""
           };
           coupon.condition = element.title;
-          coupon.name = element.shop_mall_name;
+          coupon.name = element.shopMallName;
           coupon.startAt = element.startTime;
           coupon.endAt = element.endTime;
           coupon.valueDesc = element.amount;
@@ -157,16 +183,41 @@ export default {
       }
     }
   },
-
+  async created() {
+    const res = await RequestHandler.invoke(
+      UserApi.getUserInfo(this.$store.getters.id)
+    ).exec();
+    this.$store.commit("setUserInfo", res);
+    const promotion = await RequestHandler.invoke(
+      UserApi.getUserPromotion(res.id)
+    ).exec();
+    this.$store.commit("setUserPromotionInfo", promotion);
+  },
   methods: {
     onChange(index) {
       this.showList = false;
       this.chosenCoupon = index;
     },
-    async deleteUserPromotion(userId, shopId) {
-      await RequestHandler.invoke(
-        UserApi.deleteUserPromotion(userId, shopId)
-      ).exec();
+    addPromotion() {
+      this.$dialog
+        .confirm({
+          title: "您好",
+          message: "确认兑换该优惠吗?"
+        })
+        .then(async () => {
+          debugger;
+          await RequestHandler.invoke(
+            UserApi.addPromotion(
+              this.$store.getters.id,
+              this.radio - 1,
+              this.shopNameOption[this.radio - 1].text,
+              this.radio - 1 === 0 ? 10 : 8.8
+            )
+          ).exec();
+        })
+        .catch(() => {
+          console.log(this.shopNameOption[this.radio - 1].text);
+        });
     },
     check(item) {
       if (typeof this[item].valid === "function") {
@@ -233,5 +284,19 @@ export default {
 .save {
   display: flex;
   justify-content: center;
+}
+
+[class*="van-hairline"]::after {
+  position: absolute;
+  box-sizing: border-box;
+  content: " ";
+  pointer-events: none;
+  top: -50%;
+  right: -50%;
+  bottom: -50%;
+  left: -50%;
+  border: none;
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
 }
 </style>
