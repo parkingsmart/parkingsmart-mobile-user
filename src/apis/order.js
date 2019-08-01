@@ -12,7 +12,13 @@ const updateOrderStatus = (orderId,statusCode) =>{
     url: `${baseUrl}/${orderId}?status=${statusCode}`,
   });
 };
+
+const getOrderById = (orderId) => {
+  return axios.get(`${baseUrl}/${orderId}`);
+};
+
 export default {
   addOrder,
-  updateOrderStatus
+  updateOrderStatus,
+  getOrderById
 };

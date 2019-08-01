@@ -22,10 +22,9 @@
           size="large"
           :value="OrderDetail.amount"
         />
-        <van-cell>
+        <van-cell v-show="OrderDetail.status ===5||OrderDetail.status ===6">
           <van-dropdown-menu>
             <van-dropdown-item
-              v-show="OrderDetail.status ===5||OrderDetail.status ===6"
               :title="dropdownName"
               ref="item"
               :disabled="OrderDetail.status ===6"
@@ -39,7 +38,7 @@
                     clickable
                     @click="choosePromotion(parkingPromotion)"
                   >
-                    <van-radio slot="right-icon" :name="parkingPromotion.title" />
+                    <van-radio slot="right-icon" :name="parkingPromotion.title" :disabled="integral < 20"/>
                   </van-cell>
                   <van-cell title="不使用优惠" clickable @click="choosePromotion(null)">
                     <van-radio slot="right-icon" name="不使用优惠" />
@@ -49,8 +48,8 @@
             </van-dropdown-item>
           </van-dropdown-menu>
         </van-cell>
-        <van-cell title="节约金额" size="large" :value="getDiscountAmount(discountMoney.discount)" />
-        <van-cell title="共支付(元)" size="large" :value="getShouldPay(OrderDetail, discountMoney)" />
+        <van-cell title="节约金额" size="large" :value="getDiscountAmount(discountMoney.discount)" v-show="OrderDetail.status ===5||OrderDetail.status ===6"/>
+        <van-cell title="共支付(元)" size="large" :value="getShouldPay(OrderDetail, discountMoney)" v-show="OrderDetail.status ===5||OrderDetail.status ===6"/>
         <van-cell title="服务时长" size="large" :value="getServeTime(OrderDetail)" />
       </van-cell-group>
     </div>
@@ -98,6 +97,7 @@
 
 <script>
 import userApi from "../apis/user.js";
+import orderApi from "../apis/order.js";
 import requestHandler from "../utils/requestHandler.js";
 import moment from "moment";
 import parkingPromotionApi from "../apis/parking_promotion.js";
@@ -121,15 +121,14 @@ export default {
       orderDetail: {},
       pricePerHour: 10,
       isPromotion: false,
-      integral: 20,
-      isdisable: false,
+      integral: 0,
       value: "",
       show: false,
       showDialog: false,
       showKeyboard: false,
       dropdownName: "选择优惠",
       promotions: [],
-      chosePromotion: { id: -1 },
+      chosePromotion: { id: -1, title: "不使用优惠"},
       discountMoney: {},
       notUsePromotion: { id: -1, title: "不使用优惠" }
     };
@@ -155,10 +154,9 @@ export default {
     async choosePromotion(parkingPromotion) {
       if (parkingPromotion === null && this.OrderDetail.status !== 6) {
         this.chosePromotion = this.notUsePromotion;
-        console.log(this.chosePromotion.id);
         this.dropdownName = "不使用优惠";
         this.discountMoney = "";
-      } else {
+      } else if(this.integral >= 20){
         this.chosePromotion = parkingPromotion;
         this.dropdownName = parkingPromotion.title;
         this.discountMoney = await parkingPromotionApi.getDiscount(
@@ -174,6 +172,9 @@ export default {
         this.chosePromotion = this.promotions.find(
           item => item.id === promotionId
         );
+        if(this.chosePromotion === undefined){
+          this.chosePromotion = this.notUsePromotion;
+        }
         this.dropdownName = this.chosePromotion.title;
       }
     },
@@ -200,15 +201,19 @@ export default {
           .msg(null, "支付失败")
           .loading()
           .exec();
-        this.isdisable = true;
-        this.orderDetail.status = 6;
-        this.$toast("支付成功");
+        this.refreshOrder();
+        this.$toast.success("支付成功");
       } else {
-        this.$toast("密码错误");
+        this.$toast.fail("密码错误");
       }
       this.value = "";
     },
-
+    async refreshOrder(){
+      let user = await userApi.getUserInfo(this.$store.getters.id);
+      this.$store.commit("setUserInfo", user);
+      this.orderDetail = await orderApi.getOrderById(this.orderDetail.id);
+      this.$store.commit("setOrderDetail", this.orderDetail);
+    },
     cancelPwd() {
       this.value = "";
     },
@@ -242,6 +247,7 @@ export default {
 
   created() {
     this.orderDetail = this.$store.state.orderDetail;
+    this.integral =  this.$store.state.userInfo.integral;
     if (this.orderDetail.status >= 5) {
       this.initData();
     }
