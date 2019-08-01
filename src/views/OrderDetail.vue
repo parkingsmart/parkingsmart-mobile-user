@@ -16,12 +16,7 @@
         <van-step>用户交车</van-step>
         <van-step>小哥停车</van-step>
       </van-steps>
-      <van-steps
-        v-else
-        :active="orderDetail.status % 4"
-        active-icon="success"
-        active-color="#38f"
-      >
+      <van-steps v-else :active="orderDetail.status % 4" active-icon="success" active-color="#38f">
         <van-step>通知小哥</van-step>
         <van-step>小哥还车</van-step>
         <van-step>完成订单</van-step>
@@ -45,11 +40,7 @@
         />
         <van-cell v-show="OrderDetail.status ===5||OrderDetail.status ===6">
           <van-dropdown-menu>
-            <van-dropdown-item
-              :title="dropdownName"
-              ref="item"
-              :disabled="OrderDetail.status ===6"
-            >
+            <van-dropdown-item :title="dropdownName" ref="item" :disabled="OrderDetail.status ===6">
               <van-radio-group v-model="chosePromotion.title">
                 <van-cell-group>
                   <van-cell
@@ -59,7 +50,11 @@
                     clickable
                     @click="choosePromotion(parkingPromotion)"
                   >
-                    <van-radio slot="right-icon" :name="parkingPromotion.title" :disabled="integral < 20"/>
+                    <van-radio
+                      slot="right-icon"
+                      :name="parkingPromotion.title"
+                      :disabled="integral < 20"
+                    />
                   </van-cell>
                   <van-cell title="不使用优惠" clickable @click="choosePromotion(null)">
                     <van-radio slot="right-icon" name="不使用优惠" />
@@ -69,8 +64,18 @@
             </van-dropdown-item>
           </van-dropdown-menu>
         </van-cell>
-        <van-cell title="节约金额" size="large" :value="getDiscountAmount(discountMoney.discount)" v-show="OrderDetail.status ===5||OrderDetail.status ===6"/>
-        <van-cell title="共支付(元)" size="large" :value="getShouldPay(OrderDetail, discountMoney)" v-show="OrderDetail.status ===5||OrderDetail.status ===6"/>
+        <van-cell
+          title="节约金额"
+          size="large"
+          :value="getDiscountAmount(OrderDetail, discountMoney.discount)"
+          v-show="OrderDetail.status ===5||OrderDetail.status ===6"
+        />
+        <van-cell
+          title="共支付(元)"
+          size="large"
+          :value="getShouldPay(OrderDetail, discountMoney)"
+          v-show="OrderDetail.status ===5||OrderDetail.status ===6"
+        />
         <van-cell title="服务时长" size="large" :value="getServeTime(OrderDetail)" />
       </van-cell-group>
     </div>
@@ -139,8 +144,8 @@ export default {
       showKeyboard: false,
       dropdownName: "选择优惠",
       promotions: [],
-      chosePromotion: { id: -1, title: "不使用优惠"},
-      discountMoney: {},
+      chosePromotion: { id: -1, title: "不使用优惠" },
+      discountMoney: "",
       notUsePromotion: { id: -1, title: "不使用优惠" }
     };
   },
@@ -154,10 +159,18 @@ export default {
     back() {
       this.$router.go(-1);
     },
-    getDiscountAmount(discount) {
-      if (this.orderDetail.status === 6) {
+    getDiscountAmount(order, discount) {
+      if (order.status === 5 && this.chosePromotion.id !== -1) {
+        if (this.chosePromotion.type === 0) {
+          return (order.amount - this.chosePromotion.amount * order.amount).toFixed(1);
+        }
+        if (this.chosePromotion.type === 1) {
+          return (this.chosePromotion.amount).toFixed(1);
+        }
+      }
+      if (order.status === 6) {
         return (
-          this.orderDetail.amount - this.orderDetail.discountAmount
+          order.amount - order.discountAmount
         ).toFixed(1);
       }
       return discount;
@@ -167,7 +180,7 @@ export default {
         this.chosePromotion = this.notUsePromotion;
         this.dropdownName = "不使用优惠";
         this.discountMoney = "";
-      } else if(this.integral >= 20){
+      } else if (this.integral >= 20) {
         this.chosePromotion = parkingPromotion;
         this.dropdownName = parkingPromotion.title;
         this.discountMoney = await parkingPromotionApi.getDiscount(
@@ -178,12 +191,18 @@ export default {
     },
     async initData() {
       this.promotions = await parkingPromotionApi.getAllPromotions();
+      if (this.orderDetail.status === 5) {
+        this.chosePromotion = this.getBestPromotion(
+          this.integral,
+          this.orderDetail.amount
+        );
+      }
       if (this.orderDetail.status === 6) {
         let promotionId = this.orderDetail.promotionId;
         this.chosePromotion = this.promotions.find(
           item => item.id === promotionId
         );
-        if(this.chosePromotion === undefined){
+        if (this.chosePromotion === undefined) {
           this.chosePromotion = this.notUsePromotion;
         }
         this.dropdownName = this.chosePromotion.title;
@@ -216,7 +235,7 @@ export default {
       }
       this.value = "";
     },
-    async refreshOrder(){
+    async refreshOrder() {
       let user = await userApi.getUserInfo(this.$store.getters.id);
       this.$store.commit("setUserInfo", user);
       this.orderDetail = await orderApi.getOrderById(this.orderDetail.id);
@@ -237,6 +256,14 @@ export default {
       } else return this.waitMsg;
     },
     getShouldPay(order, discountMoney) {
+      if (order.status === 5 && this.chosePromotion.id !== -1) {
+        if (this.chosePromotion.type === 0) {
+          return (this.chosePromotion.amount * order.amount).toFixed(1);
+        }
+        if (this.chosePromotion.type === 1) {
+          return (order.amount - this.chosePromotion.amount).toFixed(1);
+        }
+      }
       if (discountMoney === "" && order.status !== 6) {
         return order.amount;
       }
@@ -245,11 +272,38 @@ export default {
       } else if (this.chosePromotion.id === -1) {
         return order.amount;
       } else return discountMoney.discountAmount;
+    },
+    getBestPromotion(integral, amount) {
+      if (this.chosePromotion.id !== -1) {
+        return this.chosePromotion;
+      }
+      let promotions = this.promotions;
+      let promotion = {};
+      let discount = 0;
+      if (integral < 20) {
+        return this.notUsePromotion;
+      }
+      for (let i of promotions) {
+        if (i.type === 0) {
+          if (i.amount * amount > discount) {
+            discount = (1 - i.amount) * amount;
+            promotion = i;
+          }
+        } else {
+          console.log(discount);
+          if (i.amount > discount) {
+            discount = i.amount;
+            promotion = i;
+          }
+        }
+      }
+      this.dropdownName = promotion.title + "（推荐优惠）";
+      return promotion;
     }
   },
   created() {
     this.orderDetail = this.$store.state.orderDetail;
-    this.integral =  this.$store.state.userInfo.integral;
+    this.integral = this.$store.state.userInfo.integral;
     if (this.orderDetail.status >= 5) {
       this.initData();
     }
