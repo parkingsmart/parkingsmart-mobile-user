@@ -22,7 +22,7 @@
           </van-radio-group>
         </van-collapse-item>
       </van-collapse>
-      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showList = true" arrow-direction="down" />
+      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showPromotion()" arrow-direction="down" />
       <van-popup v-model="showList" position="bottom">
         <van-coupon-list
           :enabled-title="promotionTitle"
@@ -194,9 +194,16 @@ export default {
     this.$store.commit("setUserPromotionInfo", promotion);
   },
   methods: {
-    onChange(index) {
+    async onChange(index) {
       this.showList = false;
       this.chosenCoupon = index;
+    },
+    async showPromotion() {
+      this.showList = true;
+      const promotion = await RequestHandler.invoke(
+        UserApi.getUserPromotion(this.$store.getters.id)
+      ).exec();
+      this.$store.commit("setUserPromotionInfo", promotion);
     },
     addPromotion() {
       this.$dialog
@@ -205,7 +212,6 @@ export default {
           message: "确认兑换该优惠吗?"
         })
         .then(async () => {
-          debugger;
           await RequestHandler.invoke(
             UserApi.addPromotion(
               this.$store.getters.id,
@@ -213,6 +219,9 @@ export default {
               this.shopNameOption[this.radio - 1].text,
               this.radio - 1 === 0 ? 10 : 8.8
             )
+          ).exec();
+          await RequestHandler.invoke(
+            UserApi.getUserPromotion(this.$store.getters.id)
           ).exec();
         })
         .catch(() => {
