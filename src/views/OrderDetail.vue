@@ -134,7 +134,6 @@ export default {
       pricePerHour: 10,
       isPromotion: false,
       integral: 0,
-      isdisable: false,
       value: "",
       show: false,
       showKeyboard: false,
@@ -184,6 +183,9 @@ export default {
         this.chosePromotion = this.promotions.find(
           item => item.id === promotionId
         );
+        if(this.chosePromotion === undefined){
+          this.chosePromotion = this.notUsePromotion;
+        }
         this.dropdownName = this.chosePromotion.title;
       }
     },
@@ -208,11 +210,9 @@ export default {
           .loading()
           .exec();
         this.refreshOrder();
-        this.isdisable = true;
-        this.orderDetail.status = 6;
-        this.$toast("支付成功");
+        this.$toast.success("支付成功");
       } else {
-        this.$toast("密码错误");
+        this.$toast.fail("密码错误");
       }
       this.value = "";
     },
