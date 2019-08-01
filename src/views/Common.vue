@@ -42,7 +42,6 @@ export default {
 .header {
   background: linear-gradient(to right, #0079c1, rgb(18, 150, 219));
   text-align: center;
-  z-index: 2;
 }
 .back {
   position: absolute;

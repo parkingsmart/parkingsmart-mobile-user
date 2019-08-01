@@ -348,6 +348,7 @@ export default {
 .header {
   text-align: center;
   font-size: 15px;
+  z-index: 2;
 }
 .back {
   position: absolute;
