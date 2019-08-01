@@ -2,7 +2,20 @@
   <div slot="footer">
     <van-cell-group>
       <van-cell title="我的账号" v-model="username" />
-      <van-collapse v-model="promotionAcNames">
+      <van-collapse v-model="promotionAcNames"></van-collapse>
+      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showList = true" arrow-direction="down" />
+      <van-popup v-model="showList" position="bottom">
+        <van-coupon-list
+          :enabled-title="promotionTitle"
+          :disabled-title="disableTitle"
+          :show-exchange-bar="false"
+          :coupons="promotion"
+          :chosen-coupon="chosenCoupon"
+          :show-close-button="false"
+          @change="onChange"
+        />
+      </van-popup>
+      <van-collapse v-model="activeNames" accordion>
         <van-collapse-item title="我的积分" :label="integral" value="兑换优惠" clickable>
           <van-radio-group v-model="radio">
             <van-cell-group>
@@ -21,21 +34,7 @@
             </van-cell-group>
           </van-radio-group>
         </van-collapse-item>
-      </van-collapse>
-      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showList = true" arrow-direction="down" />
-      <van-popup v-model="showList" position="bottom">
-        <van-coupon-list
-          :enabled-title="promotionTitle"
-          :disabled-title="disableTitle"
-          :show-exchange-bar="false"
-          :coupons="promotion"
-          :chosen-coupon="chosenCoupon"
-          :show-close-button="false"
-          @change="onChange"
-        />
-      </van-popup>
-      <van-collapse v-model="passActiveNames">
-        <van-collapse-item title="修改密码">
+        <van-collapse-item title="修改密码" name="changePwd">
           <van-cell-group>
             <van-field
               label="旧密码"
@@ -67,7 +66,7 @@
           </van-cell-group>
         </van-collapse-item>
 
-        <van-collapse-item title="设置支付密码">
+        <van-collapse-item title="设置支付密码" name="setPayPwd">
           <van-cell-group>
             <van-field
               label="支付密码"
@@ -111,7 +110,7 @@ export default {
         { text: "华发商都", value: 0 },
         { text: "扬明广场", value: 1 }
       ],
-      passActiveNames: ["1"],
+      activeNames: [],
       promotionAcNames: ["1"],
       form: {
         password: "",
