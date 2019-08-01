@@ -2,7 +2,13 @@
   <div slot="footer">
     <van-cell-group>
       <van-cell title="我的账号" v-model="username" />
-      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showPromotion()" arrow-direction="down" />
+      <van-coupon-cell
+        value="可用优惠"
+        title="我的优惠"
+        label="满20积分可兑换商城优惠卷"
+        @click="showPromotion()"
+        arrow-direction="down"
+      />
       <van-popup v-model="showList" position="bottom">
         <van-coupon-list
           :enabled-title="promotionTitle"
@@ -11,7 +17,7 @@
           :show-exchange-bar="false"
           :coupons="$store.getters.coupons"
           :chosen-coupon="chosenCoupon"
-          :show-close-button="true"
+          :show-close-button="false"
           @change="onChange"
         />
       </van-popup>
@@ -159,7 +165,7 @@ export default {
       return this.$store.state.userInfo === null
         ? "Welcome"
         : this.$store.state.userInfo.integral;
-    },
+    }
   },
   async created() {
     const res = await RequestHandler.invoke(
@@ -208,7 +214,7 @@ export default {
           this.activeNames = "";
         })
         .catch(() => {
-          this.$toast("兑换失败");
+          this.$toast("积分不足,兑换失败");
         });
     },
     check(item) {
