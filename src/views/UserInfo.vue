@@ -34,20 +34,6 @@
             </van-cell-group>
           </van-radio-group>
         </van-collapse-item>
-      </van-collapse>
-      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showPromotion()" arrow-direction="down" />
-      <van-popup v-model="showList" position="bottom">
-        <van-coupon-list
-          :enabled-title="promotionTitle"
-          :disabled-title="disableTitle"
-          :show-exchange-bar="false"
-          :coupons="promotion"
-          :chosen-coupon="chosenCoupon"
-          :show-close-button="true"
-          @change="onChange"
-        />
-      </van-popup>
-      <van-collapse v-model="passActiveNames">
         <van-collapse-item title="修改密码" name="changePwd">
           <van-cell-group>
             <van-field
@@ -238,6 +224,7 @@ export default {
           await RequestHandler.invoke(
             UserApi.getUserPromotion(this.$store.getters.id)
           ).exec();
+          this.activeNames = "";
         })
         .catch(() => {
           this.$toast("添加失败");
@@ -264,6 +251,7 @@ export default {
         .exec();
       this.form1.payPassword = "";
       this.form1.comfirmPayPwd = "";
+      this.activeNames = "";
     },
 
     async updatePassword() {
@@ -289,6 +277,7 @@ export default {
           .msg("修改成功", "修改失败")
           .exec();
         this.$store.commit("setUserInfo", res);
+        this.activeNames = "";
       }
     }
   }
