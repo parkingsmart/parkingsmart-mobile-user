@@ -30,7 +30,7 @@
           :show-exchange-bar="false"
           :coupons="promotion"
           :chosen-coupon="chosenCoupon"
-          :show-close-button="false"
+          :show-close-button="true"
           @change="onChange"
         />
       </van-popup>
@@ -73,7 +73,7 @@
               label="支付密码"
               @blur="check('payPassword')"
               :error-message="payPassword.err"
-              v-model="form.payPassword"
+              v-model="form1.payPassword"
               placeholder="请输入6位数支付密码"
               type="password"
             />
@@ -81,7 +81,7 @@
               label="确认密码"
               @blur="check('comfirmPayPwd')"
               :error-message="comfirmPayPwd.err"
-              v-model="form.comfirmPayPwd"
+              v-model="form1.comfirmPayPwd"
               placeholder="请确认密码"
               type="password"
             />
@@ -116,7 +116,9 @@ export default {
       form: {
         password: "",
         comfirmPwd: "",
-        oldPassword: "",
+        oldPassword: ""
+      },
+      form1: {
         payPassword: "",
         comfirmPayPwd: ""
       },
@@ -225,7 +227,7 @@ export default {
           ).exec();
         })
         .catch(() => {
-          console.log(this.shopNameOption[this.radio - 1].text);
+          this.$toast("添加失败");
         });
     },
     check(item) {
@@ -237,18 +239,18 @@ export default {
     },
 
     async addPayPassword() {
-      if (this.form.payPassword !== this.form.comfirmPayPwd) {
+      if (this.form1.payPassword !== this.form1.comfirmPayPwd) {
         this.$toast("密码确认失败，请重新输入");
-        this.form.comfirmPayPwd = "";
+        this.form1.comfirmPayPwd = "";
         return;
       }
       await RequestHandler.invoke(
-        UserApi.addPayPassword(this.$store.getters.id, this.form.payPassword)
+        UserApi.addPayPassword(this.$store.getters.id, this.form1.payPassword)
       )
         .msg("添加成功", "添加失败")
         .exec();
-      this.form.payPassword = "";
-      this.form.comfirmPayPwd = "";
+      this.form1.payPassword = "";
+      this.form1.comfirmPayPwd = "";
     },
 
     async updatePassword() {
@@ -271,7 +273,7 @@ export default {
             password: this.form.password
           })
         )
-          .msg("修改成功")
+          .msg("修改成功", "修改失败")
           .exec();
         this.$store.commit("setUserInfo", res);
       }
