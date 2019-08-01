@@ -16,10 +16,20 @@
         <van-cell title="预约时间" size="large" :value="OrderDetail.appointTime| formatTime" />
         <van-cell title="订单结束时间" size="large" :value="OrderDetail.endAt| formatTime" />
         <van-cell title="预约地点" size="large" :value="OrderDetail.appointAddress" />
-        <van-cell title="总金额(元)" size="large" :value="OrderDetail.amount" />
+        <van-cell
+          v-show="OrderDetail.status ===5||OrderDetail.status ===6"
+          title="总金额(元)"
+          size="large"
+          :value="OrderDetail.amount"
+        />
         <van-cell>
           <van-dropdown-menu>
-            <van-dropdown-item :title="dropdownName" ref="item" :disabled="OrderDetail.status ===6">
+            <van-dropdown-item
+              v-show="OrderDetail.status ===5||OrderDetail.status ===6"
+              :title="dropdownName"
+              ref="item"
+              :disabled="OrderDetail.status ===6"
+            >
               <van-radio-group v-model="chosePromotion.title">
                 <van-cell-group>
                   <van-cell
@@ -85,7 +95,15 @@ import parkingPromotionApi from "../apis/parking_promotion.js";
 export default {
   name: "OrderDetail",
   data() {
-    const statusList = ['待接单', '已接单', '已交车', '已停车', '待还车', '待支付', '已完成'];
+    const statusList = [
+      "待接单",
+      "已接单",
+      "已交车",
+      "已停车",
+      "待还车",
+      "待支付",
+      "已完成"
+    ];
     return {
       waitMsg: "等待订单完成",
       btnText: "支付订单",
@@ -101,9 +119,9 @@ export default {
       showKeyboard: false,
       dropdownName: "选择优惠",
       promotions: [],
-      chosePromotion: { id: -1},
+      chosePromotion: { id: -1 },
       discountMoney: {},
-      notUsePromotion: { id: -1,title: "不使用优惠" }
+      notUsePromotion: { id: -1, title: "不使用优惠" }
     };
   },
   methods: {
@@ -116,9 +134,11 @@ export default {
     back() {
       this.$router.go(-1);
     },
-    getDiscountAmount(discount){
-      if (this.orderDetail.status === 6){
-        return (this.orderDetail.amount - this.orderDetail.discountAmount).toFixed(1);
+    getDiscountAmount(discount) {
+      if (this.orderDetail.status === 6) {
+        return (
+          this.orderDetail.amount - this.orderDetail.discountAmount
+        ).toFixed(1);
       }
       return discount;
     },
@@ -196,7 +216,7 @@ export default {
       }
       if (order.status === 6 && this.chosePromotion.id !== -1) {
         return order.discountAmount.toFixed(1);
-      }else if(this.chosePromotion.id === -1){
+      } else if (this.chosePromotion.id === -1) {
         return order.amount;
       } else return discountMoney.discountAmount;
     }
