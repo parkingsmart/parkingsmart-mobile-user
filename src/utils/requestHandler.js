@@ -14,9 +14,10 @@ const defaultOption = {
 
 function successHandle() {
   if (this[_option].showMsg && this[_option].successMsg) {
+    Toast.allowMultiple(true);
     Toast({
       message: this[_option].successMsg,
-      duration: 1000,
+      duration: 3000,
       background: '#1989fa'
     });
   }
@@ -25,6 +26,7 @@ function successHandle() {
 function errorHandle(err) {
   if (this[_option].showMsg) {
     const message = err && err.message ? err.message : this[_option].errorMsg;
+    Toast.allowMultiple(true);
     Toast(message);
   }
 }
@@ -41,9 +43,10 @@ class RequestHandler {
   async exec() {
     let ret = null;
     let error = null;
+    let toast = null;
 
     if (this[_option].showLoading) {
-      this[_toast]({
+      toast = this[_toast]({
         type: 'loading',
         forbidClick: true,
         duration: 0,
@@ -62,7 +65,7 @@ class RequestHandler {
       this[_errorHandle](err);
     } finally {
       if (this[_option].showLoading) {
-        this[_toast].clear();
+        toast.clear();
       }
     }
 
