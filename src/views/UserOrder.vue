@@ -62,6 +62,7 @@ export default {
     );
     webSocket.onmessage = res => {
       this.initUserOrder();
+      this.$store.commit("setDot", true);
       this.$store.commit("setWebSocketData", res.data);
       setTimeout(() => {
         this.$store.commit("setWebSocketData", null);

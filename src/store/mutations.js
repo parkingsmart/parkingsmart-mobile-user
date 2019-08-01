@@ -13,5 +13,8 @@ export default {
   },
   setWebSocketData(state,webSocketData){
     state.webSocketData = webSocketData;
+  },
+  setDot(state, dot) {
+    state.dot = dot;
   }
 };

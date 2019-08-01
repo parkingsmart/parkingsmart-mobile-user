@@ -12,7 +12,7 @@
     <div class="footer">
       <van-tabbar route>
         <van-tabbar-item replace to="/order" icon="description" name="立即下单">立即下单</van-tabbar-item>
-        <van-tabbar-item replace to="/user-order" icon="description" name="订单">订单</van-tabbar-item>
+        <van-tabbar-item replace to="/user-order" icon="description" name="订单" :dot="dot" @click="dot=false">订单</van-tabbar-item>
         <van-tabbar-item replace to="/user-info" icon="friends-o" name="我的">我的</van-tabbar-item>
       </van-tabbar>
     </div>
@@ -32,6 +32,16 @@ export default {
     back() {
       this.$router.go(-1);
     }
+  },
+  computed: {
+    dot: {
+      get() {
+        return this.$store.state.dot;
+      },
+      set(value) {
+        this.$store.commit('setDot', value);
+      }
+    }
   }
 };
 </script>
@@ -42,7 +52,6 @@ export default {
 .header {
   background: linear-gradient(to right, #0079c1, rgb(18, 150, 219));
   text-align: center;
-  z-index: 2;
 }
 .back {
   position: absolute;
