@@ -16,10 +16,20 @@
         <van-cell title="预约时间" size="large" :value="OrderDetail.appointTime| formatTime" />
         <van-cell title="订单结束时间" size="large" :value="OrderDetail.endAt| formatTime" />
         <van-cell title="预约地点" size="large" :value="OrderDetail.appointAddress" />
-        <van-cell title="总金额(元)" size="large" :value="OrderDetail.amount" />
+        <van-cell
+          v-show="OrderDetail.status ===5||OrderDetail.status ===6"
+          title="总金额(元)"
+          size="large"
+          :value="OrderDetail.amount"
+        />
         <van-cell>
           <van-dropdown-menu>
-            <van-dropdown-item :title="dropdownName" ref="item" :disabled="OrderDetail.status ===6">
+            <van-dropdown-item
+              v-show="OrderDetail.status ===5||OrderDetail.status ===6"
+              :title="dropdownName"
+              ref="item"
+              :disabled="OrderDetail.status ===6"
+            >
               <van-radio-group v-model="chosePromotion.title">
                 <van-cell-group>
                   <van-cell
