@@ -101,7 +101,7 @@ export default {
       showKeyboard: false,
       dropdownName: "选择优惠",
       promotions: [],
-      chosePromotion: {},
+      chosePromotion: { id: -1},
       discountMoney: {},
       notUsePromotion: { id: -1,title: "不使用优惠" }
     };
@@ -125,6 +125,7 @@ export default {
     async choosePromotion(parkingPromotion) {
       if (parkingPromotion === null && this.OrderDetail.status !== 6) {
         this.chosePromotion = this.notUsePromotion;
+        console.log(this.chosePromotion.id);
         this.dropdownName = "不使用优惠";
         this.discountMoney = "";
       } else {
@@ -190,11 +191,13 @@ export default {
       } else return this.waitMsg;
     },
     getShouldPay(order, discountMoney) {
-      if (discountMoney === "" && this.orderDetail.status !== 6) {
+      if (discountMoney === "" && order.status !== 6) {
         return order.amount;
       }
-      if (this.orderDetail.status === 6) {
-        return this.orderDetail.discountAmount.toFixed(1);
+      if (order.status === 6 && this.chosePromotion.id !== -1) {
+        return order.discountAmount.toFixed(1);
+      }else if(this.chosePromotion.id === -1){
+        return order.amount;
       } else return discountMoney.discountAmount;
     }
   },
