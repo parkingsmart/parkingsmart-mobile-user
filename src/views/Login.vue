@@ -57,10 +57,12 @@ export default {
         }
       }
       if (vaild) {
-        const res = await RequestHandler.invoke(UserApi.login(this.form)).msg("登录成功").exec();
-        this.$store.commit("setUserInfo", res);
+        await this.$store.dispatch("login", {
+          username: this.form.phone,
+          password: this.form.password
+        });
         this.$router.push({name: "Order"});
-        const promotion = await RequestHandler.invoke(UserApi.getUserPromotion(res.id)).exec();
+        const promotion = await RequestHandler.invoke(UserApi.getUserPromotion(this.$store.state.userInfo.id)).exec();
         this.$store.commit("setUserPromotionInfo", promotion);
       }
     }

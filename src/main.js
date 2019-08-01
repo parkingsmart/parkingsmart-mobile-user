@@ -6,6 +6,7 @@ import Vant from 'vant';
 import 'vant/lib/index.css';
 import axios from 'axios';
 import './permission';
+import 'vant/lib/icon/local.css';
 
 Vue.use(Vant);
 Vue.use(axios);

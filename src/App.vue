@@ -17,6 +17,8 @@
   </div>
 </template>
 <script>
+import { getToken } from './utils/token';
+
 export default {
   name: "app",
   computed: {
@@ -25,6 +27,11 @@ export default {
     },
     isShowPopup() {
       return this.$store.state.webSocketData !== null;
+    }
+  },
+  created() {
+    if (getToken()) {
+      this.$store.dispatch("getUserInfo");
     }
   }
 };

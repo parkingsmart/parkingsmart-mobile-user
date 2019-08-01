@@ -1,24 +1,31 @@
 <template>
   <div>
-    <div v-for="order in userOrderList" :key="order.id">
-      <van-cell
-        :title="order.appointAddress"
-        :label="order.appointTime |formatTime"
-        class="van-cell"
-      >
-        <template slot="icon">
-          <span class="car-number">{{ order.carNumber }}</span>
-        </template>
-        <van-button
-          size="small"
-          type="info"
-          @click="ChangeOrderStatus(order)"
-          :disabled="order.status!==1 && order.status!==3"
-          class="orderBtn"
-        >{{ statusList[order.status] }}</van-button>
-        <van-button size="small" type="default" @click="showDetail(order)" class="orderDetail">订单详情</van-button>
-      </van-cell>
-    </div>
+    <van-pull-refresh v-model="isLoading" @refresh="initUserOrder" class="borad">
+      <div v-for="order in userOrderList" :key="order.id">
+        <van-cell
+          :title="order.appointAddress"
+          :label="order.appointTime |formatTime"
+          class="van-cell"
+        >
+          <template slot="icon">
+            <span class="car-number">{{ order.carNumber }}</span>
+          </template>
+          <van-button
+            size="small"
+            type="info"
+            @click="ChangeOrderStatus(order)"
+            :disabled="order.status!==1 && order.status!==3"
+            class="orderBtn"
+          >{{ statusList[order.status] }}</van-button>
+          <van-button
+            size="small"
+            type="default"
+            @click="showDetail(order)"
+            class="orderDetail"
+          >订单详情</van-button>
+        </van-cell>
+      </div>
+    </van-pull-refresh>
   </div>
 </template>
 
@@ -27,16 +34,25 @@ import userApi from "../apis/user.js";
 import requestHandler from "../utils/requestHandler.js";
 import moment from "moment";
 import Config from "../config";
-import { setTimeout } from 'timers';
+import { setTimeout } from "timers";
 export default {
   name: "UserOrder",
   data() {
-    const statusList = ['待接单', '已交车', '已交车', '现在取车', '待还车', '待支付', '已完成'];
+    const statusList = [
+      "待接单",
+      "已交车",
+      "已交车",
+      "现在取车",
+      "待还车",
+      "待支付",
+      "已完成"
+    ];
     return {
       statusList,
       OrderDetail: "",
       btnStatus: true,
-      userOrderList: []
+      userOrderList: [],
+      isLoading: false
     };
   },
   async created() {
@@ -73,7 +89,13 @@ export default {
       if (order.status === 3 || order.status === 1) {
         this.OrderDetail = order;
         await requestHandler
-          .invoke(userApi.putAnOrder(this.$store.state.userInfo.id, order.id, order.status + 1))
+          .invoke(
+            userApi.putAnOrder(
+              this.$store.state.userInfo.id,
+              order.id,
+              order.status + 1
+            )
+          )
           .loading()
           .exec();
         this.userOrderList = await requestHandler
@@ -82,11 +104,12 @@ export default {
           .exec();
       }
     },
-    async initUserOrder(){
+    async initUserOrder() {
       this.userOrderList = await requestHandler
         .invoke(userApi.getAllOrders(this.$store.state.userInfo.id))
         .loading()
         .exec();
+      this.isLoading = false;
     }
   }
 };
