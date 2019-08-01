@@ -207,35 +207,28 @@ export default {
       this.$store.commit("setUserPromotionInfo", promotion);
     },
     addPromotion() {
-      if (this.$store.state.userInfo.integral < 20) {
-        this.$toast("积分不足");
-      } else {
-        this.$dialog
-          .confirm({
-            title: "您好",
-            message: "确认兑换该优惠吗?"
-          })
-          .then(async () => {
-            await RequestHandler.invoke(
-              UserApi.addPromotion(
-                this.$store.getters.id,
-                this.radio - 1,
-                this.shopNameOption[this.radio - 1].text,
-                this.radio - 1 === 0 ? 10 : 8.8
-              )
-            ).exec();
-            await RequestHandler.invoke(
-              UserApi.getUserPromotion(this.$store.getters.id)
-            ).exec();
-            const res = await RequestHandler.invoke(
-              UserApi.getUserInfo(this.$store.getters.id)
-            ).exec();
-            this.$store.commit("setUserInfo", res);
-          })
-          .catch(() => {
-            this.$toast("添加失败");
-          });
-      }
+      this.$dialog
+        .confirm({
+          title: "您好",
+          message: "确认兑换该优惠吗?"
+        })
+        .then(async () => {
+          await RequestHandler.invoke(
+            UserApi.addPromotion(
+              this.$store.getters.id,
+              this.radio - 1,
+              this.shopNameOption[this.radio - 1].text,
+              this.radio - 1 === 0 ? 10 : 8.8
+            )
+          ).exec();
+          await RequestHandler.invoke(
+            UserApi.getUserPromotion(this.$store.getters.id)
+          ).exec();
+          this.activeNames = "";
+        })
+        .catch(() => {
+          this.$toast("添加失败");
+        });
     },
     check(item) {
       if (typeof this[item].valid === "function") {
@@ -258,6 +251,7 @@ export default {
         .exec();
       this.form1.payPassword = "";
       this.form1.comfirmPayPwd = "";
+      this.activeNames = "";
     },
 
     async updatePassword() {
@@ -283,6 +277,7 @@ export default {
           .msg("修改成功", "修改失败")
           .exec();
         this.$store.commit("setUserInfo", res);
+        this.activeNames = "";
       }
     }
   }
