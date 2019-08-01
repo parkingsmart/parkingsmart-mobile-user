@@ -27,8 +27,8 @@ const getUserPromotion = (id) => {
   return axios.get(`${baseUrl}/${id}/promotions`);
 };
 
-const addPromotion = (id, type, shopMallName, amount) => {
-  return axios.post(`${baseUrl}/${id}/promotions`, { type, shopMallName, amount });
+const addPromotion = (id, type, shopMallName, amount,startTime,endTime) => {
+  return axios.post(`${baseUrl}/${id}/promotions`, { type, shopMallName, amount,startTime,endTime});
 };
 
 const register = ({ phone, password }) => {
