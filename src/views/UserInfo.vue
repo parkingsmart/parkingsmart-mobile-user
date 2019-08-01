@@ -280,6 +280,9 @@ export default {
           .exec();
         this.$store.commit("setUserInfo", res);
         this.activeNames = "";
+        this.form.password = "";
+        this.form.comfirmPwd = "";
+        this.form.oldPassword = "";
       }
     }
   }
