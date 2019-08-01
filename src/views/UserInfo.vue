@@ -221,13 +221,15 @@ export default {
               this.radio - 1 === 0 ? 10 : 8.8
             )
           ).exec();
-          await RequestHandler.invoke(
-            UserApi.getUserPromotion(this.$store.getters.id)
+          const res = await RequestHandler.invoke(
+            UserApi.getUserInfo(this.$store.getters.id)
           ).exec();
+          this.$store.commit("setUserInfo", res);
+          this.$toast("兑换成功");
           this.activeNames = "";
         })
         .catch(() => {
-          this.$toast("添加失败");
+          this.$toast("兑换失败");
         });
     },
     check(item) {
