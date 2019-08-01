@@ -96,8 +96,8 @@ export default {
               order.status + 1
             )
           )
-          .loading()
           .msg("操作成功","操作失败")
+          .loading()
           .exec();
         this.userOrderList = await requestHandler
           .invoke(userApi.getAllOrders(this.$store.state.userInfo.id))
