@@ -366,7 +366,7 @@ export default {
   color: white;
 }
 .content {
-  margin-bottom: 50px;
+  margin-bottom: 100px;
 }
 .header {
   text-align: center;
