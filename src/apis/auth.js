@@ -7,12 +7,8 @@ export const login = (username, password) => {
   });
 };
 
-export const getUserInfo = (phone) => {
-  return axios.get(`/api/users`, {
-    params: {
-      phone
-    }
-  });
+export const getUserInfo = () => {
+  return axios.get(`/api/users`);
 };
 
 export const logout = () => {
