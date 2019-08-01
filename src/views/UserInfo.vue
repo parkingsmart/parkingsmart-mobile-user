@@ -7,8 +7,9 @@
         <van-coupon-list
           :enabled-title="promotionTitle"
           :disabled-title="disableTitle"
+          :disabled-coupons="$store.getters.disabledCoupons"
           :show-exchange-bar="false"
-          :coupons="promotion"
+          :coupons="$store.getters.coupons"
           :chosen-coupon="chosenCoupon"
           :show-close-button="true"
           @change="onChange"
@@ -105,9 +106,14 @@ export default {
       showList: false,
       radio: "1",
       value: 0,
+      disabledCoupons: [],
       shopNameOption: [
         { text: "华发商都", value: 0 },
-        { text: "扬明广场", value: 1 }
+        { text: "扬名广场", value: 1 },
+        { text: "摩尔广场", value: 2 },
+        { text: "海韵城", value: 3 },
+        { text: "免税商城", value: 4 },
+        { text: "山姆会员店", value: 5 }
       ],
       promotionAcNames: ["1"],
       passActiveNames: ["1"],
@@ -154,35 +160,6 @@ export default {
         ? "Welcome"
         : this.$store.state.userInfo.integral;
     },
-    promotion() {
-      if (this.$store.state.promotion === null) {
-        return [];
-      } else {
-        let coupons = [];
-        this.$store.state.promotion.forEach(element => {
-          let coupon = {
-            condition: "",
-            name: "",
-            startAt: 0,
-            endAt: 0,
-            valueDesc: "",
-            unitDesc: "",
-            description: ""
-          };
-          coupon.condition = element.title;
-          coupon.name = element.shopMallName;
-          coupon.startAt = element.startTime;
-          coupon.endAt = element.endTime;
-          coupon.valueDesc = element.amount;
-          element.type === 0
-            ? (coupon.unitDesc = "元")
-            : (coupon.unitDesc = "折");
-          coupon.description = `兑换码:${element.redemptionCode}`;
-          coupons.push(coupon);
-        });
-        return coupons;
-      }
-    }
   },
   async created() {
     const res = await RequestHandler.invoke(
@@ -218,7 +195,9 @@ export default {
               this.$store.getters.id,
               this.radio - 1,
               this.shopNameOption[this.radio - 1].text,
-              this.radio - 1 === 0 ? 10 : 8.8
+              this.radio - 1 === 0 ? 10 : 8.8,
+              0,
+              0
             )
           ).exec();
           const res = await RequestHandler.invoke(
