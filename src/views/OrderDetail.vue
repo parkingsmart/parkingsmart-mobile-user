@@ -22,10 +22,9 @@
           size="large"
           :value="OrderDetail.amount"
         />
-        <van-cell>
+        <van-cell v-show="OrderDetail.status ===5||OrderDetail.status ===6">
           <van-dropdown-menu>
             <van-dropdown-item
-              v-show="OrderDetail.status ===5||OrderDetail.status ===6"
               :title="dropdownName"
               ref="item"
               :disabled="OrderDetail.status ===6"
@@ -49,8 +48,8 @@
             </van-dropdown-item>
           </van-dropdown-menu>
         </van-cell>
-        <van-cell title="节约金额" size="large" :value="getDiscountAmount(discountMoney.discount)" />
-        <van-cell title="共支付(元)" size="large" :value="getShouldPay(OrderDetail, discountMoney)" />
+        <van-cell title="节约金额" size="large" :value="getDiscountAmount(discountMoney.discount)" v-show="OrderDetail.status ===5||OrderDetail.status ===6"/>
+        <van-cell title="共支付(元)" size="large" :value="getShouldPay(OrderDetail, discountMoney)" v-show="OrderDetail.status ===5||OrderDetail.status ===6"/>
         <van-cell title="服务时长" size="large" :value="getServeTime(OrderDetail)" />
       </van-cell-group>
     </div>
