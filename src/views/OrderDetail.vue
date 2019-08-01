@@ -31,7 +31,7 @@
             <van-tag round type="success" class="cell-icon">{{ statusList[orderDetail.status] }}</van-tag>
           </template>
         </van-cell>
-        <van-cell title="预约时间" size="large" :value="OrderDetail.appointTime| formatTime" />
+        <van-cell title="预约时间" size="large" :value="OrderDetail.appointTime| formatTime"/>
         <van-cell title="订单结束时间" size="large" :value="OrderDetail.endAt| formatTime" />
         <van-cell title="预约地点" size="large" :value="OrderDetail.appointAddress" />
         <van-cell title="停车场" size="large" :value="parkingLot.name" />
@@ -42,6 +42,12 @@
           :value="OrderDetail.amount"
         />
         <van-cell v-show="OrderDetail.status ===5||OrderDetail.status ===6">
+          <template slot="title">
+          <span class="custom-title">使用优惠</span>
+          <div>
+            <span class="custom-title">(需要花费20积分)</span>
+          </div>
+          </template>
           <van-dropdown-menu>
             <van-dropdown-item :title="dropdownName" ref="item" :disabled="OrderDetail.status ===6">
               <van-radio-group v-model="chosePromotion.title">
@@ -247,7 +253,7 @@ export default {
           .loading()
           .exec();
         this.refreshOrder();
-        this.$toast.success("支付成功");
+        this.$toast.success("支付成功\n获得5积分");
       } else {
         this.$toast.fail("密码错误");
       }
