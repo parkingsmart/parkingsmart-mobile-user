@@ -2,7 +2,20 @@
   <div slot="footer">
     <van-cell-group>
       <van-cell title="我的账号" v-model="username" />
-      <van-collapse v-model="promotionAcNames">
+      <van-collapse v-model="promotionAcNames"></van-collapse>
+      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showList = true" arrow-direction="down" />
+      <van-popup v-model="showList" position="bottom">
+        <van-coupon-list
+          :enabled-title="promotionTitle"
+          :disabled-title="disableTitle"
+          :show-exchange-bar="false"
+          :coupons="promotion"
+          :chosen-coupon="chosenCoupon"
+          :show-close-button="false"
+          @change="onChange"
+        />
+      </van-popup>
+      <van-collapse v-model="activeNames" accordion>
         <van-collapse-item title="我的积分" :label="integral" value="兑换优惠" clickable>
           <van-radio-group v-model="radio">
             <van-cell-group>
@@ -22,7 +35,7 @@
           </van-radio-group>
         </van-collapse-item>
       </van-collapse>
-      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showList = true" arrow-direction="down" />
+      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showPromotion()" arrow-direction="down" />
       <van-popup v-model="showList" position="bottom">
         <van-coupon-list
           :enabled-title="promotionTitle"
@@ -30,12 +43,12 @@
           :show-exchange-bar="false"
           :coupons="promotion"
           :chosen-coupon="chosenCoupon"
-          :show-close-button="false"
+          :show-close-button="true"
           @change="onChange"
         />
       </van-popup>
       <van-collapse v-model="passActiveNames">
-        <van-collapse-item title="修改密码">
+        <van-collapse-item title="修改密码" name="changePwd">
           <van-cell-group>
             <van-field
               label="旧密码"
@@ -67,13 +80,13 @@
           </van-cell-group>
         </van-collapse-item>
 
-        <van-collapse-item title="设置支付密码">
+        <van-collapse-item title="设置支付密码" name="setPayPwd">
           <van-cell-group>
             <van-field
               label="支付密码"
               @blur="check('payPassword')"
               :error-message="payPassword.err"
-              v-model="form.payPassword"
+              v-model="form1.payPassword"
               placeholder="请输入6位数支付密码"
               type="password"
             />
@@ -81,7 +94,7 @@
               label="确认密码"
               @blur="check('comfirmPayPwd')"
               :error-message="comfirmPayPwd.err"
-              v-model="form.comfirmPayPwd"
+              v-model="form1.comfirmPayPwd"
               placeholder="请确认密码"
               type="password"
             />
@@ -111,12 +124,14 @@ export default {
         { text: "华发商都", value: 0 },
         { text: "扬明广场", value: 1 }
       ],
-      passActiveNames: ["1"],
+      activeNames: this.$route.params.setPayPwd,
       promotionAcNames: ["1"],
       form: {
         password: "",
         comfirmPwd: "",
-        oldPassword: "",
+        oldPassword: ""
+      },
+      form1: {
         payPassword: "",
         comfirmPayPwd: ""
       },
@@ -194,9 +209,16 @@ export default {
     this.$store.commit("setUserPromotionInfo", promotion);
   },
   methods: {
-    onChange(index) {
+    async onChange(index) {
       this.showList = false;
       this.chosenCoupon = index;
+    },
+    async showPromotion() {
+      this.showList = true;
+      const promotion = await RequestHandler.invoke(
+        UserApi.getUserPromotion(this.$store.getters.id)
+      ).exec();
+      this.$store.commit("setUserPromotionInfo", promotion);
     },
     addPromotion() {
       this.$dialog
@@ -205,7 +227,6 @@ export default {
           message: "确认兑换该优惠吗?"
         })
         .then(async () => {
-          debugger;
           await RequestHandler.invoke(
             UserApi.addPromotion(
               this.$store.getters.id,
@@ -214,9 +235,12 @@ export default {
               this.radio - 1 === 0 ? 10 : 8.8
             )
           ).exec();
+          await RequestHandler.invoke(
+            UserApi.getUserPromotion(this.$store.getters.id)
+          ).exec();
         })
         .catch(() => {
-          console.log(this.shopNameOption[this.radio - 1].text);
+          this.$toast("添加失败");
         });
     },
     check(item) {
@@ -228,18 +252,18 @@ export default {
     },
 
     async addPayPassword() {
-      if (this.form.payPassword !== this.form.comfirmPayPwd) {
+      if (this.form1.payPassword !== this.form1.comfirmPayPwd) {
         this.$toast("密码确认失败，请重新输入");
-        this.form.comfirmPayPwd = "";
+        this.form1.comfirmPayPwd = "";
         return;
       }
       await RequestHandler.invoke(
-        UserApi.addPayPassword(this.$store.getters.id, this.form.payPassword)
+        UserApi.addPayPassword(this.$store.getters.id, this.form1.payPassword)
       )
         .msg("添加成功", "添加失败")
         .exec();
-      this.form.payPassword = "";
-      this.form.comfirmPayPwd = "";
+      this.form1.payPassword = "";
+      this.form1.comfirmPayPwd = "";
     },
 
     async updatePassword() {
@@ -262,7 +286,7 @@ export default {
             password: this.form.password
           })
         )
-          .msg("修改成功")
+          .msg("修改成功", "修改失败")
           .exec();
         this.$store.commit("setUserInfo", res);
       }

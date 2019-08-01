@@ -83,7 +83,7 @@
       <van-submit-bar
         :price="getShouldPay(OrderDetail, discountMoney)*100"
         button-text="支付订单"
-        @submit="show=true"
+        @submit="submitOrder"
         v-if="orderDetail.status === 5"
       >
         <span slot="tip">
@@ -108,6 +108,15 @@
       <van-number-keyboard :show="show" @input="onInput" @delete="onDelete" @blur="show= false" />
 
       <van-overlay :show="show" @click="show = false" />
+      <van-dialog
+        v-model="showDialog"
+        show-cancel-button
+        @confirm="dialogConfirm"
+        class="dialogContent"
+      >
+        <img class="icon" src="../assets/warning.png" />
+        <p class="warnMess">您还未设置支付密码，是否前往设置？</p>
+      </van-dialog>
     </div>
   </div>
 </template>
@@ -141,6 +150,7 @@ export default {
       integral: 0,
       value: "",
       show: false,
+      showDialog: false,
       showKeyboard: false,
       dropdownName: "选择优惠",
       promotions: [],
@@ -208,14 +218,17 @@ export default {
         this.dropdownName = this.chosePromotion.title;
       }
     },
-    async comfirePwd() {
+    async submitOrder() {
       let user = await userApi.getUserInfo(this.$store.getters.id);
       if (user.payPassword === null) {
-        this.$toast("您还未设置支付密码，请前往个人中心进行设置");
+        this.showDialog = true;
         this.value = "";
         return;
       }
-
+      this.show = true;
+    },
+    async comfirePwd() {
+      let user = await userApi.getUserInfo(this.$store.getters.id);
       if (this.value === user.payPassword) {
         await requestHandler
           .invoke(
@@ -299,8 +312,15 @@ export default {
       }
       this.dropdownName = promotion.title + "（推荐优惠）";
       return promotion;
+    },
+    dialogConfirm() {
+      this.$router.push({
+        name: "UserInfo",
+        params: { setPayPwd: "setPayPwd" }
+      });
     }
   },
+
   created() {
     this.orderDetail = this.$store.state.orderDetail;
     this.integral = this.$store.state.userInfo.integral;
@@ -354,5 +374,15 @@ export default {
 }
 .register {
   background: linear-gradient(to right, rgb(194, 194, 194), rgb(166, 166, 166));
+}
+.dialogContent {
+  text-align: center;
+  padding-top: 30px;
+  & .icon {
+    height: 80px;
+  }
+  & .warnMess {
+    margin-top: 10px;
+  }
 }
 </style>
