@@ -5,6 +5,27 @@
       <span class="head">{{ title }}</span>
     </div>
     <div class="content">
+      <van-steps
+        v-if="orderDetail.status < 4"
+        :active="orderDetail.status"
+        active-icon="success"
+        active-color="#38f"
+      >
+        <van-step>用户下单</van-step>
+        <van-step>小哥接单</van-step>
+        <van-step>用户交车</van-step>
+        <van-step>小哥停车</van-step>
+      </van-steps>
+      <van-steps
+        v-else
+        :active="orderDetail.status % 4"
+        active-icon="success"
+        active-color="#38f"
+      >
+        <van-step>通知小哥</van-step>
+        <van-step>小哥还车</van-step>
+        <van-step>完成订单</van-step>
+      </van-steps>
       <van-cell-group>
         <van-cell title="订单号" size="large" :value="OrderDetail.id" />
         <van-cell title="订单开始时间" size="large" :value="OrderDetail.createAt| formatTime" />
@@ -113,7 +134,6 @@ export default {
       pricePerHour: 10,
       isPromotion: false,
       integral: 0,
-      isdisable: false,
       value: "",
       show: false,
       showKeyboard: false,
@@ -163,6 +183,9 @@ export default {
         this.chosePromotion = this.promotions.find(
           item => item.id === promotionId
         );
+        if(this.chosePromotion === undefined){
+          this.chosePromotion = this.notUsePromotion;
+        }
         this.dropdownName = this.chosePromotion.title;
       }
     },
@@ -187,11 +210,9 @@ export default {
           .loading()
           .exec();
         this.refreshOrder();
-        this.isdisable = true;
-        this.orderDetail.status = 6;
-        this.$toast("支付成功");
+        this.$toast.success("支付成功");
       } else {
-        this.$toast("密码错误");
+        this.$toast.fail("密码错误");
       }
       this.value = "";
     },
