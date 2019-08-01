@@ -3,5 +3,6 @@ export default {
   userInfo: null,
   promotion: null,
   webSocket: null,
-  webSocketData: null
+  webSocketData: null,
+  dot: false
 };
