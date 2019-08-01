@@ -2,8 +2,7 @@
   <div slot="footer">
     <van-cell-group>
       <van-cell title="我的账号" v-model="username" />
-      <van-collapse v-model="promotionAcNames"></van-collapse>
-      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showList = true" arrow-direction="down" />
+      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showPromotion()" arrow-direction="down" />
       <van-popup v-model="showList" position="bottom">
         <van-coupon-list
           :enabled-title="promotionTitle"
@@ -11,7 +10,7 @@
           :show-exchange-bar="false"
           :coupons="promotion"
           :chosen-coupon="chosenCoupon"
-          :show-close-button="false"
+          :show-close-button="true"
           @change="onChange"
         />
       </van-popup>
@@ -34,20 +33,6 @@
             </van-cell-group>
           </van-radio-group>
         </van-collapse-item>
-      </van-collapse>
-      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showPromotion()" arrow-direction="down" />
-      <van-popup v-model="showList" position="bottom">
-        <van-coupon-list
-          :enabled-title="promotionTitle"
-          :disabled-title="disableTitle"
-          :show-exchange-bar="false"
-          :coupons="promotion"
-          :chosen-coupon="chosenCoupon"
-          :show-close-button="true"
-          @change="onChange"
-        />
-      </van-popup>
-      <van-collapse v-model="passActiveNames">
         <van-collapse-item title="修改密码" name="changePwd">
           <van-cell-group>
             <van-field
@@ -124,8 +109,9 @@ export default {
         { text: "华发商都", value: 0 },
         { text: "扬明广场", value: 1 }
       ],
-      activeNames: this.$route.params.setPayPwd,
       promotionAcNames: ["1"],
+      passActiveNames: ["1"],
+      activeNames: this.$route.params.setPayPwd,
       form: {
         password: "",
         comfirmPwd: "",
@@ -221,27 +207,35 @@ export default {
       this.$store.commit("setUserPromotionInfo", promotion);
     },
     addPromotion() {
-      this.$dialog
-        .confirm({
-          title: "您好",
-          message: "确认兑换该优惠吗?"
-        })
-        .then(async () => {
-          await RequestHandler.invoke(
-            UserApi.addPromotion(
-              this.$store.getters.id,
-              this.radio - 1,
-              this.shopNameOption[this.radio - 1].text,
-              this.radio - 1 === 0 ? 10 : 8.8
-            )
-          ).exec();
-          await RequestHandler.invoke(
-            UserApi.getUserPromotion(this.$store.getters.id)
-          ).exec();
-        })
-        .catch(() => {
-          this.$toast("添加失败");
-        });
+      if (this.$store.state.userInfo.integral < 20) {
+        this.$toast("积分不足");
+      } else {
+        this.$dialog
+          .confirm({
+            title: "您好",
+            message: "确认兑换该优惠吗?"
+          })
+          .then(async () => {
+            await RequestHandler.invoke(
+              UserApi.addPromotion(
+                this.$store.getters.id,
+                this.radio - 1,
+                this.shopNameOption[this.radio - 1].text,
+                this.radio - 1 === 0 ? 10 : 8.8
+              )
+            ).exec();
+            await RequestHandler.invoke(
+              UserApi.getUserPromotion(this.$store.getters.id)
+            ).exec();
+            const res = await RequestHandler.invoke(
+              UserApi.getUserInfo(this.$store.getters.id)
+            ).exec();
+            this.$store.commit("setUserInfo", res);
+          })
+          .catch(() => {
+            this.$toast("添加失败");
+          });
+      }
     },
     check(item) {
       if (typeof this[item].valid === "function") {
