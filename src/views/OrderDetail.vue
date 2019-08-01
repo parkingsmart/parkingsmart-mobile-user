@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="header">
-      <van-icon class="back-icon" name="arrow-left" @click="back" />
+      <span class="back">
+        <van-icon class="back-icon" name="arrow-left" @click="back" />
+      </span>
       <span class="head">{{ title }}</span>
     </div>
     <div class="content">
@@ -342,6 +344,15 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
+.back {
+  position: absolute;
+  left: 10px;
+}
+.back-icon {
+  font-size: 28px;
+  line-height: 50px;
+  color: white;
+}
 .content {
   margin-bottom: 50px;
 }
@@ -349,16 +360,6 @@ export default {
   text-align: center;
   font-size: 15px;
   z-index: 2;
-}
-.back {
-  position: absolute;
-  left: 10px;
-}
-.back-icon {
-  float: left;
-  font-size: 15px;
-  line-height: 50px;
-  color: white;
 }
 .footer-btn {
   width: 100%;
