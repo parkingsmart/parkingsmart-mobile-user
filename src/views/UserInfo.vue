@@ -2,8 +2,7 @@
   <div slot="footer">
     <van-cell-group>
       <van-cell title="我的账号" v-model="username" />
-      <van-collapse v-model="promotionAcNames"></van-collapse>
-      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showList = true" arrow-direction="down" />
+      <van-coupon-cell value="可用优惠" title="我的优惠" @click="showPromotion()" arrow-direction="down" />
       <van-popup v-model="showList" position="bottom">
         <van-coupon-list
           :enabled-title="promotionTitle"
@@ -11,7 +10,7 @@
           :show-exchange-bar="false"
           :coupons="promotion"
           :chosen-coupon="chosenCoupon"
-          :show-close-button="false"
+          :show-close-button="true"
           @change="onChange"
         />
       </van-popup>
@@ -110,8 +109,9 @@ export default {
         { text: "华发商都", value: 0 },
         { text: "扬明广场", value: 1 }
       ],
-      activeNames: this.$route.params.setPayPwd,
       promotionAcNames: ["1"],
+      passActiveNames: ["1"],
+      activeNames: this.$route.params.setPayPwd,
       form: {
         password: "",
         comfirmPwd: "",
@@ -221,13 +221,15 @@ export default {
               this.radio - 1 === 0 ? 10 : 8.8
             )
           ).exec();
-          await RequestHandler.invoke(
-            UserApi.getUserPromotion(this.$store.getters.id)
+          const res = await RequestHandler.invoke(
+            UserApi.getUserInfo(this.$store.getters.id)
           ).exec();
+          this.$store.commit("setUserInfo", res);
+          this.$toast("兑换成功");
           this.activeNames = "";
         })
         .catch(() => {
-          this.$toast("添加失败");
+          this.$toast("兑换失败");
         });
     },
     check(item) {
