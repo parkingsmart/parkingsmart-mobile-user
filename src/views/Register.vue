@@ -93,7 +93,6 @@ export default {
           return;
         }
         const res = await RequestHandler.invoke(UserApi.register(this.form))
-          .msg("注册成功")
           .exec();
         this.$store.commit("setUserInfo", res);
         this.$router.push({ name: "Order" });
@@ -137,7 +136,7 @@ export default {
 }
 
 .tips {
-  font-size: 0.5rem;
-  color: rgb(194, 194, 194);
+  font-size: 15px;
+  color: #828282;
 }
 </style>

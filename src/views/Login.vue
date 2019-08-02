@@ -128,7 +128,7 @@ export default {
 }
 
 .tips {
-  font-size: 0.5rem;
-  color: rgb(194, 194, 194);
+  font-size: 15px;
+  color: #828282;
 }
 </style>
