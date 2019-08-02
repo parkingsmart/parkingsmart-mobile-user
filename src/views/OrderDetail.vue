@@ -50,23 +50,24 @@
           </template>
           <span v-if="OrderDetail.status ===6" disabled input-align="right">{{dropdownName}}</span>
           <van-dropdown-menu  v-else>
-            <van-dropdown-item :title="dropdownName" ref="item" :disabled="OrderDetail.status ===6">
+            <van-dropdown-item :title="dropdownName" ref="item" :disabled="OrderDetail.status ===6|| OrderDetail.amount === 0">
               <van-radio-group v-model="chosePromotion.title">
                 <van-cell-group>
                   <van-cell
                     v-for="parkingPromotion in promotions"
                     :key="parkingPromotion.id"
-                    :title="parkingPromotion.title"
+                    :value="parkingPromotion.title"
+                    :center=true
                     clickable
                     @click="choosePromotion(parkingPromotion)"
                   >
                     <van-radio
                       slot="right-icon"
                       :name="parkingPromotion.title"
-                      :disabled="integral < 20"
+                      :disabled="integral < 20 || OrderDetail.amount === 0"
                     />
                   </van-cell>
-                  <van-cell title="不使用优惠" clickable @click="choosePromotion(null)">
+                  <van-cell value="不使用优惠" clickable @click="choosePromotion(null)">
                     <van-radio slot="right-icon" name="不使用优惠" />
                   </van-cell>
                 </van-cell-group>
@@ -182,6 +183,9 @@ export default {
       this.$router.go(-1);
     },
     getDiscountAmount(order, discount) {
+      if (order.amount === 0) {
+        return 0.0;
+      }
       if (order.status === 5 && this.chosePromotion.id !== -1) {
         if (this.chosePromotion.type === 0) {
           return (order.amount - this.chosePromotion.amount * order.amount).toFixed(1);
@@ -198,7 +202,7 @@ export default {
       return discount;
     },
     async choosePromotion(parkingPromotion) {
-      if (parkingPromotion === null && this.OrderDetail.status !== 6) {
+      if (parkingPromotion === null && this.OrderDetail.status !== 6 || this.OrderDetail.amount === 0) {
         this.chosePromotion = this.notUsePromotion;
         this.dropdownName = "不使用优惠";
         this.discountMoney = "";
@@ -265,6 +269,7 @@ export default {
       this.$store.commit("setUserInfo", user);
       this.orderDetail = await orderApi.getOrderById(this.orderDetail.id);
       this.$store.commit("setOrderDetail", this.orderDetail);
+      this.dropdownName = this.chosePromotion.title;
     },
     cancelPwd() {
       this.value = "";
@@ -281,6 +286,9 @@ export default {
       } else return this.waitMsg;
     },
     getShouldPay(order, discountMoney) {
+      if (order.amount === 0) {
+        return 0.0;
+      }
       if (order.status === 5 && this.chosePromotion.id !== -1) {
         if (this.chosePromotion.type === 0) {
           return (this.chosePromotion.amount * order.amount).toFixed(1);
@@ -299,6 +307,10 @@ export default {
       } else return discountMoney.discountAmount;
     },
     getBestPromotion(integral, amount) {
+      if( amount === 0){
+        this.dropdownName = this.chosePromotion.title;
+        return this.chosePromotion;
+      }
       if (this.chosePromotion.id !== -1) {
         return this.chosePromotion;
       }
